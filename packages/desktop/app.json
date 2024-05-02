@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "desktop",
+    "slug": "desktop",
+    "version": "0.0.1",
+    "assetBundlePatterns": ["**/*"],
+    "web": {
+      "publicPath": "./public",
+      "favicon": "./public/static/images/icons/favicon/favicon.png"
+    }
+  }
+}

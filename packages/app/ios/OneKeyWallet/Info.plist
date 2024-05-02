@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>OneKey</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>so.onekey.app.wallet</string>
+				<string>onekey-wallet</string>
+				<string>wc</string>
+				<string>ethereum</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Use NFC to read NDEF messages into the application.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Use bluetooth to connect OneKey hardware devices.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Use bluetooth peripheral to connect OneKey hardware devices.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Use Camera to scan QR Code.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to authenticate and unlock your wallet.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Use Microphone to record videos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Use photo library to save QR images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Use photo library to read QR images.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app will be able to discover and connect to devices on the networks you use.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http-service._tcp</string>
+		<string>_http-service._udp</string>
+	</array>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.so.onekey.wallet</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<false/>
+			<key>NSUbiquitousContainerName</key>
+			<string>OneKey</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>One</string>
+		</dict>
+	</dict>
+	<key>RCTRootViewBackgroundColor</key>
+	<dict>
+		<key>dynamic</key>
+		<dict>
+			<key>dark</key>
+			<real>4280690225</real>
+			<key>light</key>
+			<integer>4294967295</integer>
+		</dict>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>SplashScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UIRequiresFullScreen</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>6f6e656b65792e6261636b757001</string>
+		<string>A000000151000000</string>
+		<string>D156000132834001</string>
+		<string>D1560001328300424C4400006E666301</string>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PlusJakartaSans-Bold.ttf</string>
+		<string>PlusJakartaSans-Medium.ttf</string>
+		<string>PlusJakartaSans-SemiBold.ttf</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fireblocks-wc</string>
+		<string>zerion</string>
+		<string>rainbow</string>
+		<string>trust</string>
+		<string>metamask</string>
+		<string>tpoutside</string>
+		<string>imtokenv2</string>
+		<string>bitkeep</string>
+		<string>oneinch</string>
+		<string>itms-apps</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+</dict>
+</plist>

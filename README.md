@@ -1,0 +1,1 @@
+Baron Chain Wallet

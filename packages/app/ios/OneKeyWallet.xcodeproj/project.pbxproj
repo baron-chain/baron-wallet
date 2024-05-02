@@ -1,0 +1,1107 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1625CE96A62F41B0B52FF2B4 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5A55C2A16742BCB8148B6E /* noop-file.swift */; };
+		35F8423629752D6D0096FC7E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35F8423829752D6D0096FC7E /* InfoPlist.strings */; };
+		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		96905EF65AED1B983A6B3ABC /* libPods-OneKeyWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-OneKeyWallet.a */; };
+		A23573BB2880172400A9CA58 /* RCTRootView+Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = A23573BA2880172400A9CA58 /* RCTRootView+Orientation.m */; };
+		A24B8A7427422EF300E321A9 /* OKNFCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = A24B8A6127422EF200E321A9 /* OKNFCBridge.mm */; };
+		A24B8A7527422EF300E321A9 /* OKNFCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = A24B8A6727422EF200E321A9 /* OKNFCUtility.m */; };
+		A24B8A7727422EF300E321A9 /* NSString+OKAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = A24B8A6A27422EF200E321A9 /* NSString+OKAdd.m */; };
+		A24B8A7827422EF300E321A9 /* NSData+StringToData.m in Sources */ = {isa = PBXBuildFile; fileRef = A24B8A6D27422EF200E321A9 /* NSData+StringToData.m */; };
+		A24B8A7A27422EF300E321A9 /* OKLiteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A24B8A7227422EF300E321A9 /* OKLiteManager.m */; };
+		A24B8A7B27422F0B00E321A9 /* GPChannelSDKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A24B8A6F27422EF200E321A9 /* GPChannelSDKCore.framework */; };
+		A24B8A7C27422F0B00E321A9 /* GPChannelSDKCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A24B8A6F27422EF200E321A9 /* GPChannelSDKCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A2732D8D29D5989000D2B412 /* CacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A2732D8C29D5989000D2B412 /* CacheManager.m */; };
+		A275EC072A4B03100053D7EC /* OKNFCLiteDefine.h in Sources */ = {isa = PBXBuildFile; fileRef = A275EC062A4B03100053D7EC /* OKNFCLiteDefine.h */; };
+		A275EC0B2A4B038C0053D7EC /* OKLiteV1.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC0A2A4B038C0053D7EC /* OKLiteV1.m */; };
+		A275EC0E2A4B03DA0053D7EC /* OKLiteV2.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC0D2A4B03DA0053D7EC /* OKLiteV2.m */; };
+		A275EC122A4B04300053D7EC /* OKNFCManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC112A4B04300053D7EC /* OKNFCManager.m */; };
+		A275EC162A4B04970053D7EC /* OKLiteCommandTool.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC152A4B04970053D7EC /* OKLiteCommandTool.m */; };
+		A275EC192A4B04C80053D7EC /* OKLiteCommandModal.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC182A4B04C80053D7EC /* OKLiteCommandModal.m */; };
+		A275EC1F2A4B05500053D7EC /* NSString+OKNFCHexStr.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC1B2A4B054F0053D7EC /* NSString+OKNFCHexStr.m */; };
+		A275EC202A4B05500053D7EC /* NSData+OKNFCHexData.m in Sources */ = {isa = PBXBuildFile; fileRef = A275EC1C2A4B054F0053D7EC /* NSData+OKNFCHexData.m */; };
+		A2760463288EC098002A82DC /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2760462288EC098002A82DC /* CloudKit.framework */; };
+		A2760468288F6E57002A82DC /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2760465288F6E57002A82DC /* PlusJakartaSans-Bold.ttf */; };
+		A2760469288F6E57002A82DC /* PlusJakartaSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2760466288F6E57002A82DC /* PlusJakartaSans-SemiBold.ttf */; };
+		A276046A288F6E57002A82DC /* PlusJakartaSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2760467288F6E57002A82DC /* PlusJakartaSans-Medium.ttf */; };
+		A284EFA327C49CDD0070F4EA /* NFCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = A284EFA227C49CDD0070F4EA /* NFCConfig.m */; };
+		A284EFC427CE238D0070F4EA /* OKTools.m in Sources */ = {isa = PBXBuildFile; fileRef = A284EFC327CE238D0070F4EA /* OKTools.m */; };
+		A293099029AC7A8A0014F5EF /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A293098F29AC7A8A0014F5EF /* NotificationService.m */; };
+		A293099429AC7A8A0014F5EF /* ServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A293098C29AC7A8A0014F5EF /* ServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A2A3376A28ADF8BC00053A5C /* JPushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A2A3376928ADF8BC00053A5C /* JPushManager.m */; };
+		A2D02C042824EAF9005A45F0 /* SplashScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A2D02C032824EAF9005A45F0 /* SplashScreenManager.m */; };
+		A2D598AF282BFD0B00152C7C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A2D598AE282BFCE600152C7C /* GoogleService-Info.plist */; };
+		A2DA064C288A8C5700357518 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = A2DA064B288A8C5700357518 /* UIColor+Hex.m */; };
+		A2DA064F288A8D1900357518 /* RNTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = A2DA064E288A8D1900357518 /* RNTabView.m */; };
+		A2E533472885151100063227 /* PagingView.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E533462885151100063227 /* PagingView.m */; };
+		A2E5334A2885157E00063227 /* PagingViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E533492885157E00063227 /* PagingViewManager.m */; };
+		A2E5334D288515EA00063227 /* PagingViewContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E5334C288515EA00063227 /* PagingViewContainer.m */; };
+		A2F6BE9928882FB9005798D7 /* RCTScrollView+swizzled.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F6BE9828882FB9005798D7 /* RCTScrollView+swizzled.m */; };
+		A3294A682844472100C18DD0 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A3294A672844472100C18DD0 /* AppDelegate.mm */; };
+		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		EA09275C2BDB600F00E02666 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EA09275B2BDB600F00E02666 /* PrivacyInfo.xcprivacy */; };
+		F44507EC289DDCE100F70EB6 /* web-embed in Resources */ = {isa = PBXBuildFile; fileRef = F44507EB289DDCE100F70EB6 /* web-embed */; };
+		F46D18DA290A577F0018E04D /* Minimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F46D18D8290A577F0018E04D /* Minimizer.m */; };
+		F483AEE0290A81C500423430 /* HTTPServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F483AEDF290A81C500423430 /* HTTPServerManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A293099229AC7A8A0014F5EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A293098B29AC7A8A0014F5EF;
+			remoteInfo = ServiceExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A24B8A7D27422F0B00E321A9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A24B8A7C27422F0B00E321A9 /* GPChannelSDKCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A293099529AC7A8A0014F5EF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A293099429AC7A8A0014F5EF /* ServiceExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* OneKeyWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OneKeyWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = OneKeyWallet/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = OneKeyWallet/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = OneKeyWallet/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OneKeyWallet/main.m; sourceTree = "<group>"; };
+		35F8423729752D6D0096FC7E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		35F8423929752D720096FC7E /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		35F8423A29752D730096FC7E /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		35F8423B297532F00096FC7E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		35F8423C297533300096FC7E /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-OneKeyWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneKeyWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C2E3173556A471DD304B334 /* Pods-OneKeyWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneKeyWallet.debug.xcconfig"; path = "Target Support Files/Pods-OneKeyWallet/Pods-OneKeyWallet.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-OneKeyWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneKeyWallet.release.xcconfig"; path = "Target Support Files/Pods-OneKeyWallet/Pods-OneKeyWallet.release.xcconfig"; sourceTree = "<group>"; };
+		A23573B92880172400A9CA58 /* RCTRootView+Orientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTRootView+Orientation.h"; sourceTree = "<group>"; };
+		A23573BA2880172400A9CA58 /* RCTRootView+Orientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTRootView+Orientation.m"; sourceTree = "<group>"; };
+		A24B8A6027422EF200E321A9 /* OKNFCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKNFCUtility.h; sourceTree = "<group>"; };
+		A24B8A6127422EF200E321A9 /* OKNFCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OKNFCBridge.mm; sourceTree = "<group>"; };
+		A24B8A6327422EF200E321A9 /* GPChannelSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPChannelSDK.h; sourceTree = "<group>"; };
+		A24B8A6427422EF200E321A9 /* GPChannelSDKCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPChannelSDKCore.h; sourceTree = "<group>"; };
+		A24B8A6627422EF200E321A9 /* OKNFCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKNFCBridge.h; sourceTree = "<group>"; };
+		A24B8A6727422EF200E321A9 /* OKNFCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKNFCUtility.m; sourceTree = "<group>"; };
+		A24B8A6A27422EF200E321A9 /* NSString+OKAdd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OKAdd.m"; sourceTree = "<group>"; };
+		A24B8A6B27422EF200E321A9 /* NSData+StringToData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+StringToData.h"; sourceTree = "<group>"; };
+		A24B8A6C27422EF200E321A9 /* NSString+OKAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OKAdd.h"; sourceTree = "<group>"; };
+		A24B8A6D27422EF200E321A9 /* NSData+StringToData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+StringToData.m"; sourceTree = "<group>"; };
+		A24B8A6F27422EF200E321A9 /* GPChannelSDKCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GPChannelSDKCore.framework; sourceTree = "<group>"; };
+		A24B8A7027422EF200E321A9 /* wallet.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = wallet.entitlements; path = OneKeyWallet/wallet.entitlements; sourceTree = "<group>"; };
+		A24B8A7227422EF300E321A9 /* OKLiteManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKLiteManager.m; sourceTree = "<group>"; };
+		A24B8A7327422EF300E321A9 /* OKLiteManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKLiteManager.h; sourceTree = "<group>"; };
+		A2732D8B29D5989000D2B412 /* CacheManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CacheManager.h; sourceTree = "<group>"; };
+		A2732D8C29D5989000D2B412 /* CacheManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CacheManager.m; sourceTree = "<group>"; };
+		A275EC062A4B03100053D7EC /* OKNFCLiteDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKNFCLiteDefine.h; sourceTree = "<group>"; };
+		A275EC092A4B038C0053D7EC /* OKLiteV1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKLiteV1.h; sourceTree = "<group>"; };
+		A275EC0A2A4B038C0053D7EC /* OKLiteV1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKLiteV1.m; sourceTree = "<group>"; };
+		A275EC0C2A4B03DA0053D7EC /* OKLiteV2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKLiteV2.h; sourceTree = "<group>"; };
+		A275EC0D2A4B03DA0053D7EC /* OKLiteV2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKLiteV2.m; sourceTree = "<group>"; };
+		A275EC0F2A4B040A0053D7EC /* OKLiteProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKLiteProtocol.h; sourceTree = "<group>"; };
+		A275EC102A4B04300053D7EC /* OKNFCManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKNFCManager.h; sourceTree = "<group>"; };
+		A275EC112A4B04300053D7EC /* OKNFCManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKNFCManager.m; sourceTree = "<group>"; };
+		A275EC142A4B04970053D7EC /* OKLiteCommandTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKLiteCommandTool.h; sourceTree = "<group>"; };
+		A275EC152A4B04970053D7EC /* OKLiteCommandTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKLiteCommandTool.m; sourceTree = "<group>"; };
+		A275EC172A4B04C80053D7EC /* OKLiteCommandModal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKLiteCommandModal.h; sourceTree = "<group>"; };
+		A275EC182A4B04C80053D7EC /* OKLiteCommandModal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKLiteCommandModal.m; sourceTree = "<group>"; };
+		A275EC1B2A4B054F0053D7EC /* NSString+OKNFCHexStr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OKNFCHexStr.m"; sourceTree = "<group>"; };
+		A275EC1C2A4B054F0053D7EC /* NSData+OKNFCHexData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+OKNFCHexData.m"; sourceTree = "<group>"; };
+		A275EC1D2A4B05500053D7EC /* NSData+OKNFCHexData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+OKNFCHexData.h"; sourceTree = "<group>"; };
+		A275EC1E2A4B05500053D7EC /* NSString+OKNFCHexStr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OKNFCHexStr.h"; sourceTree = "<group>"; };
+		A2760462288EC098002A82DC /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		A2760465288F6E57002A82DC /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
+		A2760466288F6E57002A82DC /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		A2760467288F6E57002A82DC /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
+		A284EFA127C49CDD0070F4EA /* NFCConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NFCConfig.h; sourceTree = "<group>"; };
+		A284EFA227C49CDD0070F4EA /* NFCConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NFCConfig.m; sourceTree = "<group>"; };
+		A284EFC227CE238D0070F4EA /* OKTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTools.h; sourceTree = "<group>"; };
+		A284EFC327CE238D0070F4EA /* OKTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTools.m; sourceTree = "<group>"; };
+		A293098C29AC7A8A0014F5EF /* ServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A293098E29AC7A8A0014F5EF /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		A293098F29AC7A8A0014F5EF /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		A293099129AC7A8A0014F5EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2A3376828ADF8BC00053A5C /* JPushManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPushManager.h; sourceTree = "<group>"; };
+		A2A3376928ADF8BC00053A5C /* JPushManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JPushManager.m; sourceTree = "<group>"; };
+		A2D02C022824EAF9005A45F0 /* SplashScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashScreenManager.h; sourceTree = "<group>"; };
+		A2D02C032824EAF9005A45F0 /* SplashScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashScreenManager.m; sourceTree = "<group>"; };
+		A2D598AE282BFCE600152C7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "OneKeyWallet/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A2DA064A288A8C5700357518 /* UIColor+Hex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+Hex.h"; sourceTree = "<group>"; };
+		A2DA064B288A8C5700357518 /* UIColor+Hex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
+		A2DA064D288A8D1900357518 /* RNTabView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNTabView.h; sourceTree = "<group>"; };
+		A2DA064E288A8D1900357518 /* RNTabView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTabView.m; sourceTree = "<group>"; };
+		A2E533452885151100063227 /* PagingView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PagingView.h; sourceTree = "<group>"; };
+		A2E533462885151100063227 /* PagingView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PagingView.m; sourceTree = "<group>"; };
+		A2E533482885157E00063227 /* PagingViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PagingViewManager.h; sourceTree = "<group>"; };
+		A2E533492885157E00063227 /* PagingViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PagingViewManager.m; sourceTree = "<group>"; };
+		A2E5334B288515EA00063227 /* PagingViewContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PagingViewContainer.h; sourceTree = "<group>"; };
+		A2E5334C288515EA00063227 /* PagingViewContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PagingViewContainer.m; sourceTree = "<group>"; };
+		A2F6BE9728882FB9005798D7 /* RCTScrollView+swizzled.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTScrollView+swizzled.h"; sourceTree = "<group>"; };
+		A2F6BE9828882FB9005798D7 /* RCTScrollView+swizzled.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTScrollView+swizzled.m"; sourceTree = "<group>"; };
+		A3294A672844472100C18DD0 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = OneKeyWallet/AppDelegate.mm; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = OneKeyWallet/SplashScreen.storyboard; sourceTree = "<group>"; };
+		AB5A55C2A16742BCB8148B6E /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "OneKeyWallet/noop-file.swift"; sourceTree = "<group>"; };
+		EA09275B2BDB600F00E02666 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F44507EB289DDCE100F70EB6 /* web-embed */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "web-embed"; path = "OneKeyWallet/web-embed"; sourceTree = "<group>"; };
+		F46D18D8290A577F0018E04D /* Minimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Minimizer.m; sourceTree = "<group>"; };
+		F46D18D9290A577F0018E04D /* Minimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Minimizer.h; sourceTree = "<group>"; };
+		F483AEDE290A81C500423430 /* HTTPServerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPServerManager.h; sourceTree = "<group>"; };
+		F483AEDF290A81C500423430 /* HTTPServerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPServerManager.m; sourceTree = "<group>"; };
+		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-OneKeyWallet/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2760463288EC098002A82DC /* CloudKit.framework in Frameworks */,
+				96905EF65AED1B983A6B3ABC /* libPods-OneKeyWallet.a in Frameworks */,
+				A24B8A7B27422F0B00E321A9 /* GPChannelSDKCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A293098929AC7A8A0014F5EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		13B07FAE1A68108700A75B9A /* OneKeyWallet */ = {
+			isa = PBXGroup;
+			children = (
+				EA09275B2BDB600F00E02666 /* PrivacyInfo.xcprivacy */,
+				F44507EB289DDCE100F70EB6 /* web-embed */,
+				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				A3294A672844472100C18DD0 /* AppDelegate.mm */,
+				A2E53344288514A900063227 /* PagingView */,
+				A24B8A7127422EF300E321A9 /* RNBridge */,
+				A24B8A6927422EF200E321A9 /* Category */,
+				A24B8A6E27422EF200E321A9 /* Frameworks */,
+				A284EFC127CE23580070F4EA /* Other */,
+				A24B8A5F27422EF200E321A9 /* NFC */,
+				BB2F792B24A3F905000567C9 /* Supporting */,
+				A2760464288F6E43002A82DC /* Fonts */,
+				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
+				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				13B07FB61A68108700A75B9A /* Info.plist */,
+				35F8423829752D6D0096FC7E /* InfoPlist.strings */,
+				13B07FB71A68108700A75B9A /* main.m */,
+				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				AB5A55C2A16742BCB8148B6E /* noop-file.swift */,
+				A24B8A7027422EF200E321A9 /* wallet.entitlements */,
+				A2D598AE282BFCE600152C7C /* GoogleService-Info.plist */,
+			);
+			name = OneKeyWallet;
+			sourceTree = "<group>";
+		};
+		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A2760462288EC098002A82DC /* CloudKit.framework */,
+				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-OneKeyWallet.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		83CBB9F61A601CBA00E9B192 = {
+			isa = PBXGroup;
+			children = (
+				13B07FAE1A68108700A75B9A /* OneKeyWallet */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				A293098D29AC7A8A0014F5EF /* ServiceExtension */,
+				83CBBA001A601CBA00E9B192 /* Products */,
+				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				D65327D7A22EEC0BE12398D9 /* Pods */,
+				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		83CBBA001A601CBA00E9B192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13B07F961A680F5B00A75B9A /* OneKeyWallet.app */,
+				A293098C29AC7A8A0014F5EF /* ServiceExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		92DBD88DE9BF7D494EA9DA96 /* OneKeyWallet */ = {
+			isa = PBXGroup;
+			children = (
+				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
+			);
+			name = OneKeyWallet;
+			sourceTree = "<group>";
+		};
+		A24B8A5F27422EF200E321A9 /* NFC */ = {
+			isa = PBXGroup;
+			children = (
+				A275EC1A2A4B05340053D7EC /* Utils */,
+				A275EC132A4B04810053D7EC /* OKLiteCommand */,
+				A275EC082A4B03660053D7EC /* OKNFTLite */,
+				A24B8A6227422EF200E321A9 /* GPChannelSDKCoreHeaders */,
+				A24B8A6627422EF200E321A9 /* OKNFCBridge.h */,
+				A24B8A6127422EF200E321A9 /* OKNFCBridge.mm */,
+				A24B8A6027422EF200E321A9 /* OKNFCUtility.h */,
+				A24B8A6727422EF200E321A9 /* OKNFCUtility.m */,
+				A275EC062A4B03100053D7EC /* OKNFCLiteDefine.h */,
+			);
+			name = NFC;
+			path = OneKeyWallet/NFC;
+			sourceTree = "<group>";
+		};
+		A24B8A6227422EF200E321A9 /* GPChannelSDKCoreHeaders */ = {
+			isa = PBXGroup;
+			children = (
+				A24B8A6327422EF200E321A9 /* GPChannelSDK.h */,
+				A24B8A6427422EF200E321A9 /* GPChannelSDKCore.h */,
+			);
+			path = GPChannelSDKCoreHeaders;
+			sourceTree = "<group>";
+		};
+		A24B8A6927422EF200E321A9 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				A23573B92880172400A9CA58 /* RCTRootView+Orientation.h */,
+				A23573BA2880172400A9CA58 /* RCTRootView+Orientation.m */,
+				A24B8A6C27422EF200E321A9 /* NSString+OKAdd.h */,
+				A24B8A6A27422EF200E321A9 /* NSString+OKAdd.m */,
+				A24B8A6B27422EF200E321A9 /* NSData+StringToData.h */,
+				A24B8A6D27422EF200E321A9 /* NSData+StringToData.m */,
+				A2DA064A288A8C5700357518 /* UIColor+Hex.h */,
+				A2DA064B288A8C5700357518 /* UIColor+Hex.m */,
+			);
+			name = Category;
+			path = OneKeyWallet/Category;
+			sourceTree = "<group>";
+		};
+		A24B8A6E27422EF200E321A9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A24B8A6F27422EF200E321A9 /* GPChannelSDKCore.framework */,
+			);
+			name = Frameworks;
+			path = OneKeyWallet/Frameworks;
+			sourceTree = "<group>";
+		};
+		A24B8A7127422EF300E321A9 /* RNBridge */ = {
+			isa = PBXGroup;
+			children = (
+				F46D18D9290A577F0018E04D /* Minimizer.h */,
+				F46D18D8290A577F0018E04D /* Minimizer.m */,
+				A24B8A7327422EF300E321A9 /* OKLiteManager.h */,
+				A24B8A7227422EF300E321A9 /* OKLiteManager.m */,
+				F483AEDE290A81C500423430 /* HTTPServerManager.h */,
+				F483AEDF290A81C500423430 /* HTTPServerManager.m */,
+				A2A3376828ADF8BC00053A5C /* JPushManager.h */,
+				A2A3376928ADF8BC00053A5C /* JPushManager.m */,
+				A2D02C022824EAF9005A45F0 /* SplashScreenManager.h */,
+				A2D02C032824EAF9005A45F0 /* SplashScreenManager.m */,
+				A284EFA127C49CDD0070F4EA /* NFCConfig.h */,
+				A284EFA227C49CDD0070F4EA /* NFCConfig.m */,
+				A2732D8B29D5989000D2B412 /* CacheManager.h */,
+				A2732D8C29D5989000D2B412 /* CacheManager.m */,
+			);
+			name = RNBridge;
+			path = OneKeyWallet/RNBridge;
+			sourceTree = "<group>";
+		};
+		A275EC082A4B03660053D7EC /* OKNFTLite */ = {
+			isa = PBXGroup;
+			children = (
+				A275EC092A4B038C0053D7EC /* OKLiteV1.h */,
+				A275EC0A2A4B038C0053D7EC /* OKLiteV1.m */,
+				A275EC0C2A4B03DA0053D7EC /* OKLiteV2.h */,
+				A275EC0D2A4B03DA0053D7EC /* OKLiteV2.m */,
+				A275EC0F2A4B040A0053D7EC /* OKLiteProtocol.h */,
+				A275EC102A4B04300053D7EC /* OKNFCManager.h */,
+				A275EC112A4B04300053D7EC /* OKNFCManager.m */,
+			);
+			path = OKNFTLite;
+			sourceTree = "<group>";
+		};
+		A275EC132A4B04810053D7EC /* OKLiteCommand */ = {
+			isa = PBXGroup;
+			children = (
+				A275EC142A4B04970053D7EC /* OKLiteCommandTool.h */,
+				A275EC152A4B04970053D7EC /* OKLiteCommandTool.m */,
+				A275EC172A4B04C80053D7EC /* OKLiteCommandModal.h */,
+				A275EC182A4B04C80053D7EC /* OKLiteCommandModal.m */,
+			);
+			path = OKLiteCommand;
+			sourceTree = "<group>";
+		};
+		A275EC1A2A4B05340053D7EC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A275EC1D2A4B05500053D7EC /* NSData+OKNFCHexData.h */,
+				A275EC1C2A4B054F0053D7EC /* NSData+OKNFCHexData.m */,
+				A275EC1E2A4B05500053D7EC /* NSString+OKNFCHexStr.h */,
+				A275EC1B2A4B054F0053D7EC /* NSString+OKNFCHexStr.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		A2760464288F6E43002A82DC /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				A2760465288F6E57002A82DC /* PlusJakartaSans-Bold.ttf */,
+				A2760467288F6E57002A82DC /* PlusJakartaSans-Medium.ttf */,
+				A2760466288F6E57002A82DC /* PlusJakartaSans-SemiBold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		A284EFC127CE23580070F4EA /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				A284EFC227CE238D0070F4EA /* OKTools.h */,
+				A284EFC327CE238D0070F4EA /* OKTools.m */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		A293098D29AC7A8A0014F5EF /* ServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				A293098E29AC7A8A0014F5EF /* NotificationService.h */,
+				A293098F29AC7A8A0014F5EF /* NotificationService.m */,
+				A293099129AC7A8A0014F5EF /* Info.plist */,
+			);
+			path = ServiceExtension;
+			sourceTree = "<group>";
+		};
+		A2E53344288514A900063227 /* PagingView */ = {
+			isa = PBXGroup;
+			children = (
+				A2DA064D288A8D1900357518 /* RNTabView.h */,
+				A2DA064E288A8D1900357518 /* RNTabView.m */,
+				A2E533452885151100063227 /* PagingView.h */,
+				A2E533462885151100063227 /* PagingView.m */,
+				A2E533482885157E00063227 /* PagingViewManager.h */,
+				A2E533492885157E00063227 /* PagingViewManager.m */,
+				A2E5334B288515EA00063227 /* PagingViewContainer.h */,
+				A2E5334C288515EA00063227 /* PagingViewContainer.m */,
+				A2F6BE9728882FB9005798D7 /* RCTScrollView+swizzled.h */,
+				A2F6BE9828882FB9005798D7 /* RCTScrollView+swizzled.m */,
+			);
+			path = PagingView;
+			sourceTree = "<group>";
+		};
+		BB2F792B24A3F905000567C9 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Supporting;
+			path = OneKeyWallet/Supporting;
+			sourceTree = "<group>";
+		};
+		D65327D7A22EEC0BE12398D9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6C2E3173556A471DD304B334 /* Pods-OneKeyWallet.debug.xcconfig */,
+				7A4D352CD337FB3A3BF06240 /* Pods-OneKeyWallet.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				92DBD88DE9BF7D494EA9DA96 /* OneKeyWallet */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		13B07F861A680F5B00A75B9A /* OneKeyWallet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "OneKeyWallet" */;
+			buildPhases = (
+				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
+				DE81B5693A25D6FE06DC9ED0 /* [Expo] Configure project */,
+				13B07F871A680F5B00A75B9A /* Sources */,
+				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				A293099529AC7A8A0014F5EF /* Embed Foundation Extensions */,
+				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
+				A24B8A7D27422F0B00E321A9 /* Embed Frameworks */,
+				9058B79AF4DA19F9C0F46EAA /* [CP-User] [RNFB] Core Configuration */,
+				4FB5397D2F202C5DC83FD05B /* [CP-User] [RNFB] Crashlytics Configuration */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A293099329AC7A8A0014F5EF /* PBXTargetDependency */,
+			);
+			name = OneKeyWallet;
+			productName = OneKeyWallet;
+			productReference = 13B07F961A680F5B00A75B9A /* OneKeyWallet.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A293098B29AC7A8A0014F5EF /* ServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A293099829AC7A8A0014F5EF /* Build configuration list for PBXNativeTarget "ServiceExtension" */;
+			buildPhases = (
+				A293098829AC7A8A0014F5EF /* Sources */,
+				A293098929AC7A8A0014F5EF /* Frameworks */,
+				A293098A29AC7A8A0014F5EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ServiceExtension;
+			productName = ServiceExtension;
+			productReference = A293098C29AC7A8A0014F5EF /* ServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		83CBB9F71A601CBA00E9B192 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				TargetAttributes = {
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = BVJ3FU5H2K;
+						LastSwiftMigration = 1250;
+						ProvisioningStyle = Manual;
+					};
+					A293098B29AC7A8A0014F5EF = {
+						CreatedOnToolsVersion = 14.2;
+						DevelopmentTeam = BVJ3FU5H2K;
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "OneKeyWallet" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-HK",
+				"zh-Hans",
+				ja,
+				id,
+			);
+			mainGroup = 83CBB9F61A601CBA00E9B192;
+			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				13B07F861A680F5B00A75B9A /* OneKeyWallet */,
+				A293098B29AC7A8A0014F5EF /* ServiceExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		13B07F8E1A680F5B00A75B9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				35F8423629752D6D0096FC7E /* InfoPlist.strings in Resources */,
+				F44507EC289DDCE100F70EB6 /* web-embed in Resources */,
+				EA09275C2BDB600F00E02666 /* PrivacyInfo.xcprivacy in Resources */,
+				A276046A288F6E57002A82DC /* PlusJakartaSans-Medium.ttf in Resources */,
+				A2760468288F6E57002A82DC /* PlusJakartaSans-Bold.ttf in Resources */,
+				A2760469288F6E57002A82DC /* PlusJakartaSans-SemiBold.ttf in Resources */,
+				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				A2D598AF282BFD0B00152C7C /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A293098A29AC7A8A0014F5EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\nexport NODE_OPTIONS=--max_old_space_size=16384\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\nexport ENTRY_FILE=./index.js\n\n`node --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n";
+		};
+		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-OneKeyWallet-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4FB5397D2F202C5DC83FD05B /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
+		};
+		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-OneKeyWallet/Pods-OneKeyWallet-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKeyWallet/Pods-OneKeyWallet-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9058B79AF4DA19F9C0F46EAA /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
+		};
+		DE81B5693A25D6FE06DC9ED0 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-OneKeyWallet/expo-configure-project.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		13B07F871A680F5B00A75B9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A24B8A7727422EF300E321A9 /* NSString+OKAdd.m in Sources */,
+				A275EC0B2A4B038C0053D7EC /* OKLiteV1.m in Sources */,
+				A2DA064F288A8D1900357518 /* RNTabView.m in Sources */,
+				A275EC1F2A4B05500053D7EC /* NSString+OKNFCHexStr.m in Sources */,
+				A2DA064C288A8C5700357518 /* UIColor+Hex.m in Sources */,
+				A275EC0E2A4B03DA0053D7EC /* OKLiteV2.m in Sources */,
+				A2F6BE9928882FB9005798D7 /* RCTScrollView+swizzled.m in Sources */,
+				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				A2732D8D29D5989000D2B412 /* CacheManager.m in Sources */,
+				A23573BB2880172400A9CA58 /* RCTRootView+Orientation.m in Sources */,
+				A24B8A7527422EF300E321A9 /* OKNFCUtility.m in Sources */,
+				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
+				F46D18DA290A577F0018E04D /* Minimizer.m in Sources */,
+				A24B8A7827422EF300E321A9 /* NSData+StringToData.m in Sources */,
+				A3294A682844472100C18DD0 /* AppDelegate.mm in Sources */,
+				A2E533472885151100063227 /* PagingView.m in Sources */,
+				A284EFA327C49CDD0070F4EA /* NFCConfig.m in Sources */,
+				A275EC162A4B04970053D7EC /* OKLiteCommandTool.m in Sources */,
+				A275EC192A4B04C80053D7EC /* OKLiteCommandModal.m in Sources */,
+				A24B8A7427422EF300E321A9 /* OKNFCBridge.mm in Sources */,
+				A275EC202A4B05500053D7EC /* NSData+OKNFCHexData.m in Sources */,
+				A2D02C042824EAF9005A45F0 /* SplashScreenManager.m in Sources */,
+				A2A3376A28ADF8BC00053A5C /* JPushManager.m in Sources */,
+				F483AEE0290A81C500423430 /* HTTPServerManager.m in Sources */,
+				A275EC072A4B03100053D7EC /* OKNFCLiteDefine.h in Sources */,
+				1625CE96A62F41B0B52FF2B4 /* noop-file.swift in Sources */,
+				A2E5334D288515EA00063227 /* PagingViewContainer.m in Sources */,
+				A284EFC427CE238D0070F4EA /* OKTools.m in Sources */,
+				A2E5334A2885157E00063227 /* PagingViewManager.m in Sources */,
+				A275EC122A4B04300053D7EC /* OKNFCManager.m in Sources */,
+				A24B8A7A27422EF300E321A9 /* OKLiteManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A293098829AC7A8A0014F5EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A293099029AC7A8A0014F5EF /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A293099329AC7A8A0014F5EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A293098B29AC7A8A0014F5EF /* ServiceExtension */;
+			targetProxy = A293099229AC7A8A0014F5EF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		35F8423829752D6D0096FC7E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				35F8423729752D6D0096FC7E /* en */,
+				35F8423929752D720096FC7E /* zh-HK */,
+				35F8423A29752D730096FC7E /* zh-Hans */,
+				35F8423B297532F00096FC7E /* ja */,
+				35F8423C297533300096FC7E /* id */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		13B07F941A680F5B00A75B9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-OneKeyWallet.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					"x86_64-apple-ios-simulator",
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = OneKeyWallet/wallet.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: OneKey Dev (YWGM987DN8)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2022032401;
+				DEVELOPMENT_TEAM = BVJ3FU5H2K;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = BVJ3FU5H2K;
+				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				"EXCLUDED_SOURCE_FILE_NAMES[sdk=iphonesimulator*]" = (
+					"*/NFC/OKNFCLiteDefine.h",
+					"*/NFC/OKNFCBridge.h",
+					"*/NFC/OKNFCBridge.mm",
+					"*/RNBridge/OKLiteManager.h",
+					"*/RNBridge/OKLiteManager.m",
+					"*/Frameworks/GPChannelSDKCore.framework",
+					"*/NFC/OKNFTLite/OKLiteProtocol.h",
+					"*/NFC/OKNFTLite/OKLiteV1.h",
+					"*/NFC/OKNFTLite/OKLiteV1.m",
+					"*/NFC/OKNFTLite/OKLiteV2.h",
+					"*/NFC/OKNFTLite/OKLiteV2.m",
+					"*/NFC/OKNFTLite/OKNFCManager.h",
+					"*/NFC/OKNFTLite/OKNFCManager.m",
+					"*/NFC/OKLiteCommand/OKLiteCommandModal.h",
+					"*/NFC/OKLiteCommand/OKLiteCommandModal.m",
+					"*/NFC/OKLiteCommand/OKLiteCommandTool.h",
+					"*/NFC/OKLiteCommand/OKLiteCommandTool.m",
+				);
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OneKeyWallet/Frameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
+				);
+				INFOPLIST_FILE = OneKeyWallet/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.wallet;
+				PRODUCT_NAME = OneKeyWallet;
+				PROVISIONING_PROFILE_SPECIFIER = "OnekeyX development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "OnekeyX development";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_WORKSPACE = NO;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		13B07F951A680F5B00A75B9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-OneKeyWallet.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = OneKeyWallet/wallet.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2022032401;
+				DEVELOPMENT_TEAM = BVJ3FU5H2K;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OneKeyWallet/Frameworks",
+				);
+				INFOPLIST_FILE = OneKeyWallet/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.wallet;
+				PRODUCT_NAME = OneKeyWallet;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_WORKSPACE = NO;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		83CBBA201A601CBA00E9B192 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = OneKeyWallet/wallet.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		83CBBA211A601CBA00E9B192 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = OneKeyWallet/wallet.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A293099629AC7A8A0014F5EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer: OneKey Dev (YWGM987DN8)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2022032401;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = BVJ3FU5H2K;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.wallet.ServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "OneKeyWallet ServiceExtension development";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A293099729AC7A8A0014F5EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2022032401;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BVJ3FU5H2K;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.wallet.ServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "OneKeyWallet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13B07F941A680F5B00A75B9A /* Debug */,
+				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "OneKeyWallet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83CBBA201A601CBA00E9B192 /* Debug */,
+				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A293099829AC7A8A0014F5EF /* Build configuration list for PBXNativeTarget "ServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A293099629AC7A8A0014F5EF /* Debug */,
+				A293099729AC7A8A0014F5EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
+}

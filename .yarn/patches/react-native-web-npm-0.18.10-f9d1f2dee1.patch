@@ -1,0 +1,144 @@
+diff --git a/dist/exports/Dimensions/index.js b/dist/exports/Dimensions/index.js
+index 63af38bc973616969f5ccf3f6ab99d035e79c5f8..e45e7b57304fd3bbb6693e08b357e4f810c61ba8 100644
+--- a/dist/exports/Dimensions/index.js
++++ b/dist/exports/Dimensions/index.js
+@@ -9,6 +9,8 @@
+  */
+ import invariant from 'fbjs/lib/invariant';
+ import canUseDOM from '../../modules/canUseDom';
++import { throttle } from 'lodash';
++
+ var dimensions = {
+   window: {
+     fontScale: 1,
+@@ -33,6 +35,12 @@ function update() {
+ 
+   var win = window;
+   var docEl = win.document.documentElement;
++
++  if (docEl.clientHeight === dimensions.window.height && 
++    docEl.clientWidth === dimensions.window.width &&
++    win.screen.height === dimensions.screen.height && 
++    win.screen.width === dimensions.screen.width) return;
++
+   dimensions.window = {
+     fontScale: 1,
+     height: docEl.clientHeight,
+@@ -45,12 +53,11 @@ function update() {
+     scale: win.devicePixelRatio || 1,
+     width: win.screen.width
+   };
++  return true;
+ }
+ 
+ function handleResize() {
+-  update();
+-
+-  if (Array.isArray(listeners['change'])) {
++  if (update() && Array.isArray(listeners['change'])) {
+     listeners['change'].forEach(handler => handler(dimensions));
+   }
+ }
+@@ -100,6 +107,7 @@ export default class Dimensions {
+ 
+ }
+ 
++const handleResizeThrottle = throttle(handleResize, 300);
+ if (canUseDOM) {
+-  window.addEventListener('resize', handleResize, false);
++  window.addEventListener('resize', handleResizeThrottle, false);
+ }
+\ No newline at end of file
+diff --git a/dist/exports/Image/index.js b/dist/exports/Image/index.js
+index 93c5f22f3b5c7625f3d428302033aae287a576f8..b06dbea0187ab4721133806a9c60f92bbfbcc037 100644
+--- a/dist/exports/Image/index.js
++++ b/dist/exports/Image/index.js
+@@ -179,6 +179,14 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
+     }
+   }
+ 
++  var isMountedRef = React.useRef(true);
++  React.useEffect(() => {
++    isMountedRef.current = true;
++    return () => {
++      isMountedRef.current = false;
++    };
++  }, []);
++
+   var _React$useState = React.useState(() => {
+     var uri = resolveAssetUri(source);
+ 
+@@ -247,7 +255,7 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
+     if (resizeMode === 'center' || resizeMode === 'repeat' || onLayout) {
+       var _layout = e.nativeEvent.layout;
+       onLayout && onLayout(e);
+-      updateLayout(_layout);
++      isMountedRef.current && updateLayout(_layout);
+     }
+   } // Image loading
+ 
+@@ -257,14 +265,14 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
+     abortPendingRequest();
+ 
+     if (uri != null) {
+-      updateState(LOADING);
++      isMountedRef.current && updateState(LOADING);
+ 
+       if (onLoadStart) {
+         onLoadStart();
+       }
+ 
+       requestRef.current = ImageLoader.load(uri, function load(e) {
+-        updateState(LOADED);
++        isMountedRef.current && updateState(LOADED);
+ 
+         if (onLoad) {
+           onLoad(e);
+@@ -274,7 +282,7 @@ var Image = /*#__PURE__*/React.forwardRef((props, ref) => {
+           onLoadEnd();
+         }
+       }, function error() {
+-        updateState(ERRORED);
++        isMountedRef.current && updateState(ERRORED);
+ 
+         if (onError) {
+           onError({
+diff --git a/dist/vendor/react-native/VirtualizedList/index.js b/dist/vendor/react-native/VirtualizedList/index.js
+index 801cc86c00539a8989670df44daa0f97158ac59a..277739565f9851e7b8c60e37f3ea819f088b58cb 100644
+--- a/dist/vendor/react-native/VirtualizedList/index.js
++++ b/dist/vendor/react-native/VirtualizedList/index.js
+@@ -561,6 +561,34 @@ class VirtualizedList extends React.PureComponent {
+         this._hasWarned.perf = true;
+       }
+ 
++      // onekey patch ----------------------------------------------
++      var perfCheckContentLength = 200;
++      if (this.props && this.props.perfCheckContentLength) {
++        perfCheckContentLength = this.props.perfCheckContentLength;
++      }
++      if (contentLength > perfCheckContentLength) {
++        // IOneKeyPerfCheckPayload
++        var perfEventPayload = {
++          testID: this.props && this.props.testID,
++          componentName: 'VirtualizedList',
++
++          flatListInfo: {
++            cellKey: this.context && this.context.cellKey,
++            firstData: this.props && this.props.data && this.props.data[0],
++            contentLength: contentLength,
++            perfCheckContentLength: perfCheckContentLength,
++          }
++        };
++        if (
++          typeof window !=='undefined' && 
++          typeof CustomEvent !=='undefined' && 
++          window.dispatchEvent
++          ) {
++          window.dispatchEvent(new CustomEvent('OneKeyEventPerfCheck', {detail: perfEventPayload}));
++        }
++      }
++      // onekey patch ----------------------------------------------
++
+       this._scrollMetrics = {
+         contentLength,
+         dt,
