@@ -1,43 +1,41 @@
-/* eslint-disable import/first */
-/* eslint-disable import/order */
-const {
-  appSetting,
-  AppSettingKey,
-} = require('@onekeyhq/shared/src/storage/appSetting');
+import { registerRootComponent } from 'expo';
+import { Platform } from 'react-native';
+import { appSetting, AppSettingKey } from '@onekeyhq/shared/src/storage/appSetting';
+import App from './App';
 
-if (process.env.NODE_ENV !== 'production') {
-  // react-render-tracker needs to be loaded before render initialization.
-  const rrt = appSetting.getBoolean(AppSettingKey.rrt);
-  if (rrt) {
-    const { Platform } = require('react-native');
+// Performance monitoring setup
+function setupPerformanceMonitoring() {
+  if (appSetting.getBoolean(AppSettingKey.perf_switch)) {
+    const {
+      markJsBundleLoadedTime,
+      markBatteryLevel,
+      startRecordingMetrics,
+    } = require('@onekeyhq/shared/src/modules3rdParty/react-native-metrix');
+
+    markJsBundleLoadedTime();
+    markBatteryLevel();
+    startRecordingMetrics();
+  }
+}
+
+// React Render Tracker setup for non-production environments
+function setupReactRenderTracker() {
+  if (process.env.NODE_ENV !== 'production' && appSetting.getBoolean(AppSettingKey.rrt)) {
     const manufacturer = Platform.constants.Brand
       ? `${Platform.constants.Brand} (${Platform.constants.Manufacturer})`
       : '';
     const fingerprint = Platform.constants.Fingerprint
       ? `-${Platform.constants.Fingerprint}`
       : '';
+    
     global.REMPL_TITLE = `${manufacturer}${Platform.OS}_${Platform.Version}${fingerprint}`;
     require('react-render-tracker');
   }
 }
 
-// Monitoring application performance in integration test and regression test.
-if (appSetting.getBoolean(AppSettingKey.perf_switch)) {
-  const {
-    markJsBundleLoadedTime,
-    markBatteryLevel,
-    startRecordingMetrics,
-  } = require('@onekeyhq/shared/src/modules3rdParty/react-native-metrix');
-  markJsBundleLoadedTime();
-  markBatteryLevel();
-  startRecordingMetrics();
-}
+// Initialize performance monitoring and development tools
+setupPerformanceMonitoring();
+setupReactRenderTracker();
 
-import { registerRootComponent } from 'expo';
-
-import App from './App';
-
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
+// Register the root component
 registerRootComponent(App);
