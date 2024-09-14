@@ -23,10 +23,10 @@
     "development": {
       "extends": "base",
       "developmentClient": true,
+      "distribution": "internal",
       "env": {
         "ENVIRONMENT": "development"
       },
-      "distribution": "internal",
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleDirectDebug",
@@ -38,25 +38,6 @@
       "ios": {
         "enterpriseProvisioning": "adhoc",
         "buildConfiguration": "Debug"
-      }
-    },
-    "production-store": {
-      "extends": "base",
-      "distribution": "store",
-      "env": {
-        "ENVIRONMENT": "production"
-      },
-      "android": {
-        "buildType": "app-bundle",
-        "gradleCommand": ":app:bundleGoogleRelease",
-        "env": {
-          "ANDROID_CHANNEL": "google"
-        }
-      },
-      "ios": {
-        "enterpriseProvisioning": "universal",
-        "buildConfiguration": "Release",
-        "credentialsSource": "local"
       }
     },
     "production": {
@@ -79,14 +60,23 @@
         "credentialsSource": "local"
       }
     },
-    "production-huawei": {
-      "extends": "base",
-      "distribution": "store",
-      "env": {
-        "ENVIRONMENT": "production"
-      },
+    "production-store": {
+      "extends": "production",
       "android": {
-        "buildType": "apk",
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleGoogleRelease",
+        "env": {
+          "ANDROID_CHANNEL": "google"
+        }
+      },
+      "ios": {
+        "enterpriseProvisioning": "universal",
+        "distribution": "store"
+      }
+    },
+    "production-huawei": {
+      "extends": "production",
+      "android": {
         "gradleCommand": ":app:assembleHuaweiRelease",
         "env": {
           "ANDROID_CHANNEL": "huawei"
