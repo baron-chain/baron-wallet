@@ -1,11 +1,11 @@
 {
   "expo": {
-    "scheme": "onekey-wallet",
-    "name": "OneKey Wallet",
-    "slug": "OneKey-Wallet",
-    "owner": "onekeyhq",
+    "name": "Baron Wallet",
+    "slug": "baron-wallet",
+    "owner": "baronhq",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
+    "scheme": "baron-wallet",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -13,28 +13,38 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 30000
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "so.onekey.wallet",
-      "associatedDomains": ["applinks:app.onekey.so"]
+      "bundleIdentifier": "com.baron.wallet",
+      "associatedDomains": [
+        "applinks:app.baron.com"
+      ],
+      "buildNumber": "1"
     },
     "android": {
-      "googleServicesFile": "./android/app/google-services.json",
+      "package": "com.baron.wallet",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "640c3c38-d160-48c3-b4a3-40d4fc8aeb08"
+        "projectId": "your-project-id-here"
       }
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }
