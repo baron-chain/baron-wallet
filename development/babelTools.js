@@ -3,80 +3,26 @@ const path = require('path');
 const developmentConsts = require('./developmentConsts');
 const envExposedToClient = require('./envExposedToClient');
 
-function fullPath(pathStr) {
-  return path.resolve(__dirname, pathStr);
-}
+const fullPath = (pathStr) => path.resolve(__dirname, pathStr);
 
 const moduleResolverAliasForAllWebPlatform = {
-  // * cause firefox popup resize issue
-  'react-native-restart': fullPath(
-    './module-resolver/react-native-restart-mock',
-  ),
-  'react-native-fast-image': fullPath(
-    './module-resolver/react-native-fast-image-mock',
-  ),
-  'react-native-keyboard-manager': fullPath(
-    './module-resolver/react-native-keyboard-manager-mock',
-  ),
+  'react-native-restart': fullPath('./module-resolver/react-native-restart-mock'),
+  'react-native-fast-image': fullPath('./module-resolver/react-native-fast-image-mock'),
+  'react-native-keyboard-manager': fullPath('./module-resolver/react-native-keyboard-manager-mock'),
+};
+
+const customAliasForComponents = (name, file) => {
+  if (name.startsWith('use')) {
+    return `@baronhq/components/src/Provider/hooks/${name}`;
+  }
+  return `@baronhq/components/src/${name}`;
 };
 
 function normalizeConfig({ platform, config }) {
-  process.env.ONEKEY_PLATFORM = platform;
-  let moduleResolver = null;
-  if (platform === developmentConsts.platforms.ext) {
-    moduleResolver = {
-      alias: {
-        ...moduleResolverAliasForAllWebPlatform,
-        ...(developmentConsts.isManifestV3
-          ? {
-              'filecoin.js': fullPath(
-                './module-resolver/filecoin.js/index.ext-bg-v3.js',
-              ),
-            }
-          : {}),
-      },
-    };
-  }
-  if (platform === developmentConsts.platforms.web) {
-    moduleResolver = {
-      alias: {
-        ...moduleResolverAliasForAllWebPlatform,
-      },
-    };
-  }
-  if (platform === developmentConsts.platforms.webEmbed) {
-    moduleResolver = {
-      alias: {
-        ...moduleResolverAliasForAllWebPlatform,
-      },
-    };
-  }
-  if (platform === developmentConsts.platforms.desktop) {
-    moduleResolver = {
-      alias: {
-        ...moduleResolverAliasForAllWebPlatform,
-      },
-    };
-  }
-  if (platform === developmentConsts.platforms.app) {
-    moduleResolver = {
-      alias: {
-        '@ipld/dag-cbor': '@ipld/dag-cbor/dist/index.min.js',
-        'multiformats/basics': 'multiformats/basics',
-        'multiformats/cid': 'multiformats/cid',
-        'multiformats/hashes': 'multiformats/hashes',
-        'multiformats': 'multiformats/index.js',
-      },
-    };
-  }
-  const customAliasForComponents = (name, file) => {
-    // const filename = file.opts.filename;
-    if (name.startsWith('use')) {
-      return `@onekeyhq/components/src/Provider/hooks/${name}`;
-    }
-    return `@onekeyhq/components/src/${name}`;
-  };
-
+  process.env.BARON_PLATFORM = platform;
+  
+  const moduleResolver = getModuleResolver(platform);
+  
   const {
     isJest,
     isDev,
@@ -93,21 +39,14 @@ function normalizeConfig({ platform, config }) {
   config.plugins = [
     ...(config.plugins || []),
     [
-      // Expose env variable to app client-side code, so you can access it like `process.env.XXXXX`
       'transform-inline-environment-variables',
       {
-        // *** ATTENTION: DO NOT expose any sensitive variable here ***
-        // ***        like password, secretKey, etc.                ***
-        'include': envExposedToClient.buildEnvExposedToClientDangerously({
-          platform,
-        }),
+        'include': envExposedToClient.buildEnvExposedToClientDangerously({ platform }),
       },
     ],
     [
       'transform-define',
       {
-        // override runtime env with buildtime env
-        // so it can do more tree shaking
         'platformEnv.isJest': isJest,
         'platformEnv.isDev': isDev,
         'platformEnv.isProduction': isProduction,
@@ -120,63 +59,34 @@ function normalizeConfig({ platform, config }) {
         'platformEnv.isExtFirefox': isExtFirefox,
       },
     ],
-    /*
-    support lodash import in Ext background like this:
-      import { isFunction } from 'lodash';
-
-    error in ui:
-       Unchecked runtime.lastError: Could not establish connection. Receiving end does not exist.
-    and background code will never be executed.
-     */
-    // ['babel-plugin-lodash'],
-    [
-      'babel-plugin-import',
-      {
-        'libraryName': 'lodash',
-        'libraryDirectory': '',
-        'camel2DashComponentName': false, // default: true
-      },
-      'lodash',
-    ],
-    [
-      'babel-plugin-import',
-      {
-        'libraryName': '@onekeyhq/components',
-        'camel2DashComponentName': false, // default: true
-        'customName': customAliasForComponents,
-      },
-      '@onekeyhq_components',
-    ],
-    [
-      'babel-plugin-import',
-      {
-        'libraryName': '@onekeyhq/components/src',
-        'camel2DashComponentName': false, // default: true
-        'customName': customAliasForComponents,
-      },
-      '@onekeyhq_components_src',
-    ],
-    [
-      'babel-plugin-inline-import',
-      {
-        'extensions': ['.text-js'],
-      },
-    ],
-    /* FIX:
-       TypeError: undefiend is not an object (evaluating 'this._callListeners.bind')
-     */
-    ['@babel/plugin-transform-flow-strip-types'],
+    ['babel-plugin-import', {
+      'libraryName': 'lodash',
+      'libraryDirectory': '',
+      'camel2DashComponentName': false,
+    }, 'lodash'],
+    ['babel-plugin-import', {
+      'libraryName': '@baronhq/components',
+      'camel2DashComponentName': false,
+      'customName': customAliasForComponents,
+    }, '@baronhq_components'],
+    ['babel-plugin-import', {
+      'libraryName': '@baronhq/components/src',
+      'camel2DashComponentName': false,
+      'customName': customAliasForComponents,
+    }, '@baronhq_components_src'],
+    ['babel-plugin-inline-import', { 'extensions': ['.text-js'] }],
+    '@babel/plugin-transform-flow-strip-types',
     ['@babel/plugin-proposal-decorators', { 'legacy': true }],
     ['@babel/plugin-proposal-class-properties', { 'loose': true }],
     ['@babel/plugin-proposal-private-methods', { 'loose': true }],
     ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
-    ['@babel/plugin-proposal-export-namespace-from'],
-    ['@babel/plugin-proposal-nullish-coalescing-operator'],
-    ['@babel/plugin-proposal-class-static-block'],
+    '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+    '@babel/plugin-proposal-class-static-block',
     isDev && [
       'babel-plugin-catch-logger',
       {
-        source: '@onekeyhq/shared/src/logger/autoLogger',
+        source: '@baronhq/shared/src/logger/autoLogger',
         name: 'autoLogger',
         methodName: 'error',
         catchPromise: false,
@@ -185,14 +95,11 @@ function normalizeConfig({ platform, config }) {
     ],
     moduleResolver && ['module-resolver', moduleResolver],
   ].filter(Boolean);
-  // console.log('babelToolsConfig > moduleResolver: ', moduleResolver);
 
-  // https://babeljs.io/docs/en/options#no-targets
   if (!config.targets) {
     config.targets = 'defaults';
   }
 
-  // https://babeljs.io/docs/en/assumptions
   config.assumptions = {
     noDocumentAll: true,
     noClassCalls: true,
@@ -203,6 +110,38 @@ function normalizeConfig({ platform, config }) {
   };
 
   return config;
+}
+
+function getModuleResolver(platform) {
+  const baseAlias = moduleResolverAliasForAllWebPlatform;
+  
+  switch (platform) {
+    case developmentConsts.platforms.ext:
+      return {
+        alias: {
+          ...baseAlias,
+          ...(developmentConsts.isManifestV3 ? {
+            'filecoin.js': fullPath('./module-resolver/filecoin.js/index.ext-bg-v3.js'),
+          } : {}),
+        },
+      };
+    case developmentConsts.platforms.web:
+    case developmentConsts.platforms.webEmbed:
+    case developmentConsts.platforms.desktop:
+      return { alias: baseAlias };
+    case developmentConsts.platforms.app:
+      return {
+        alias: {
+          '@ipld/dag-cbor': '@ipld/dag-cbor/dist/index.min.js',
+          'multiformats/basics': 'multiformats/basics',
+          'multiformats/cid': 'multiformats/cid',
+          'multiformats/hashes': 'multiformats/hashes',
+          'multiformats': 'multiformats/index.js',
+        },
+      };
+    default:
+      return null;
+  }
 }
 
 module.exports = {
