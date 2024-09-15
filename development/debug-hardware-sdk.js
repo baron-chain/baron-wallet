@@ -1,29 +1,18 @@
 /**
  * @file debug-hardware-sdk.js
- * hardware sdk debug script
- * hardware sdk publish script: yarn publish:yalc
+ * Hardware SDK debug script
+ * Hardware SDK publish script: yarn publish:yalc
  *
- * example: yarn debug:hardware-sdk -v 0.2.40
+ * Example: yarn debug:hardware-sdk -v 0.2.40
  */
-const { exec, execSync } = require('child_process');
-const argv = require('minimist')(process.argv.slice(2));
 
+const { exec, execSync } = require('child_process');
+const minimist = require('minimist');
+
+const argv = minimist(process.argv.slice(2));
 const LIB_VERSION = argv.v || 'latest';
 
-// Check whether yalc is installed
-exec('which yalc', (error, stdout, stderr) => {
-  if (error) {
-    // If yalc is not installed, run the installation command
-    console.log('yalc not installed, start installing...');
-    installYalc();
-    return;
-  }
-
-  console.log('yalc installed, start adding libraries...');
-  addLibrary();
-});
-
-const needDependenceLibrary = [
+const BARON_LIBRARIES = [
   'hd-core',
   'hd-ble-sdk',
   'hd-transport',
@@ -32,29 +21,55 @@ const needDependenceLibrary = [
 ];
 
 /**
- * Dependence Hardware SDK
+ * Add Baron libraries using yalc
  */
-function addLibrary() {
-  needDependenceLibrary.forEach((library) => {
+function addLibraries() {
+  BARON_LIBRARIES.forEach((library) => {
     try {
-      execSync(`yalc add @onekeyfe/${library}@${LIB_VERSION}`);
-      console.log(`add @onekeyfe/${library}@${LIB_VERSION} Done`);
+      execSync(`yalc add @baronfe/${library}@${LIB_VERSION}`);
+      console.log(`Added @baronfe/${library}@${LIB_VERSION} successfully`);
     } catch (error) {
-      console.error(`An error occurred while executing the command: ${error}`);
+      console.error(`Error adding @baronfe/${library}: ${error.message}`);
     }
   });
 }
 
 /**
- * install yalc
+ * Install yalc globally
  */
 function installYalc() {
-  exec('npm install -g yalc', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`An error occurred while executing the command: ${error}`);
-      return;
-    }
-    console.log('yalc installed, start adding libraries...');
-    addLibrary();
+  return new Promise((resolve, reject) => {
+    exec('npm install -g yalc', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error installing yalc: ${error.message}`);
+        reject(error);
+      } else {
+        console.log('yalc installed successfully');
+        resolve();
+      }
+    });
   });
 }
+
+/**
+ * Check if yalc is installed and proceed accordingly
+ */
+function checkYalcAndProceed() {
+  exec('which yalc', async (error, stdout, stderr) => {
+    if (error) {
+      console.log('yalc not found, installing...');
+      try {
+        await installYalc();
+        addLibraries();
+      } catch (installError) {
+        console.error('Failed to install yalc. Please install it manually.');
+      }
+    } else {
+      console.log('yalc is already installed, adding libraries...');
+      addLibraries();
+    }
+  });
+}
+
+// Start the process
+checkYalcAndProceed();
