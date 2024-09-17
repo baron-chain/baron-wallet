@@ -1,8 +1,8 @@
-const developmentConsts = require('./developmentConsts');
+import { isManifestV3 } from './developmentConsts';
 
-const sharedTranspile = [];
+const sharedTranspile: string[] = [];
 
-const taprootModules = [
+const taprootModules: string[] = [
   '@cmdcode/buff-utils',
   '@cmdcode/tapscript',
   '@cmdcode/tapscript/dist/main.cjs',
@@ -10,7 +10,7 @@ const taprootModules = [
   '@cmdcode/crypto-utils/dist/main.cjs',
 ];
 
-const walletConnectModules = [
+const walletConnectModules: string[] = [
   '@walletconnect/time',
   '@walletconnect/utils',
   '@walletconnect/window-getters',
@@ -33,9 +33,9 @@ const walletConnectModules = [
   '@stablelib/x25519',
 ];
 
-const substrateModules = ['@substrate/txwrapper-core'];
+const substrateModules: string[] = ['@substrate/txwrapper-core'];
 
-const polkadotModules = [
+const polkadotModules: string[] = [
   '@polkadot/api',
   '@polkadot/wasm-bridge',
   '@polkadot/types-codec',
@@ -47,7 +47,7 @@ const polkadotModules = [
   '@polkadot/keyring',
 ];
 
-const webModuleTranspile = [
+const webModuleTranspile: string[] = [
   ...sharedTranspile,
   ...walletConnectModules,
   ...taprootModules,
@@ -60,23 +60,23 @@ const webModuleTranspile = [
   '@solana/web3.js',
   '@kaspa/core-lib',
   '@zondax/izari-filecoin',
-  '@onekeyhq',
+  '@baronhq',
   'timeout-signal',
 ];
 
-const extModuleTranspile = [
+const extModuleTranspile: string[] = [
   ...sharedTranspile,
   ...substrateModules,
   ...polkadotModules,
   ...walletConnectModules,
   ...taprootModules,
-  '@onekeyhq/blockchain-libs',
-  '@onekeyhq/components',
-  '@onekeyhq/kit',
-  '@onekeyhq/kit-bg',
-  '@onekeyhq/shared',
-  '@onekeyhq/engine',
-  '@onekeyhq/app',
+  '@baronhq/blockchain-libs',
+  '@baronhq/components',
+  '@baronhq/kit',
+  '@baronhq/kit-bg',
+  '@baronhq/shared',
+  '@baronhq/engine',
+  '@baronhq/app',
   'react-native-animated-splash-screen',
   'moti',
   'popmotion',
@@ -87,13 +87,16 @@ const extModuleTranspile = [
   '@solana/web3.js',
   '@zondax/izari-filecoin',
   '@kaspa/core-lib',
-  ...(developmentConsts.isManifestV3
+  ...(isManifestV3()
     ? [
         // '@blitslabs/filecoin-js-signer'
       ]
     : []),
 ];
 
+export { webModuleTranspile, extModuleTranspile };
+
+// For CommonJS compatibility (if needed)
 module.exports = {
   webModuleTranspile,
   extModuleTranspile,
