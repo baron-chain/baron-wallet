@@ -1,8 +1,8 @@
-// Keep this file for run testing jest *.ts files
-const babelTools = require('./development/babelTools');
+// Configuration for running Jest tests on TypeScript files
+const { normalizeConfig, developmentConsts } = require('./development/babelTools');
 
-module.exports = babelTools.normalizeConfig({
-  platform: babelTools.developmentConsts.platforms.all,
+module.exports = normalizeConfig({
+  platform: developmentConsts.platforms.all,
   config: {
     presets: ['babel-preset-expo'],
     plugins: [],
