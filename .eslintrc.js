@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV !== 'production';
+
 const jsRules = {
-  // eslint-disable-next-line global-require
   'prettier/prettier': ['error', require('./.prettierrc.js')],
   'no-unused-vars': 'off',
   'no-use-before-define': 'off',
@@ -22,12 +22,12 @@ const jsRules = {
     },
   ],
   'global-require': 'off',
-  'import/no-unresolved': 'off', // tsc can check this
+  'import/no-unresolved': 'off',
   'no-promise-executor-return': 'off',
   'default-param-last': 'off',
   'import/no-cycle': 'error',
-  // 'no-console': [isDev ? 'warn' : 'off'],
 };
+
 const tsRules = {
   '@typescript-eslint/default-param-last': 'off',
   '@typescript-eslint/consistent-type-imports': [
@@ -69,7 +69,7 @@ const tsRules = {
           'position': 'before',
         },
         {
-          'pattern': '@onekeyhq/**',
+          'pattern': '@baron/**',
           'group': 'external',
           'position': 'after',
         },
@@ -92,6 +92,7 @@ const tsRules = {
     },
   ],
 };
+
 module.exports = {
   ignorePatterns: [
     'packages/components/src/Icon/*',
@@ -120,7 +121,6 @@ module.exports = {
         ...tsRules,
       },
     },
-    // test files rules must be at LAST
     {
       files: ['test/**/*.js', 'test/**/*.ts', '**/*.test.ts'],
       extends: ['plugin:jest/recommended'],
