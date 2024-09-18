@@ -12,11 +12,8 @@
   <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
   <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
   <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-
-  <!-- Remove permissions that are not needed for the Google Play build -->
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove"/>
-
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
@@ -31,13 +28,13 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
       <intent-filter>
-        <data android:scheme="so.onekey.app.wallet"/>
+        <data android:scheme="so.baron.app.wallet"/>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
       <intent-filter>
-        <data android:scheme="onekey-wallet"/>
+        <data android:scheme="baron-wallet"/>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
