@@ -4,9 +4,6 @@ set -x
 
 yarn reset-cache
 
-# Single clean workspace command:
-# touch .env && mv .env .env-bak && git clean -dfX && mv .env-bak .env
-
 rm -rf ./node_modules
 rm -rf ./.expo
 rm -rf ./.husky/_
