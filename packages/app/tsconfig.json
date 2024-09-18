@@ -1,10 +1,6 @@
 {
-  // Extend the base TypeScript configuration
   "extends": "../../tsconfig.json",
-
-  // Compiler options specific to this sub-project
   "compilerOptions": {
-    // Use React Native's JSX transformation
     "jsx": "react-native"
   }
 }
