@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 const webpack = require('webpack');
 const { createWebpackConfigAsync } = require('expo-yarn-workspaces/webpack');
-const devUtils = require('@onekeyhq/ext/development/devUtils');
+const devUtils = require('@baronhq/ext/development/devUtils');
 const webpackTools = require('../../development/webpackTools');
 const { webModuleTranspile } = require('../../development/webpackTranspiles');
 
@@ -9,7 +9,6 @@ console.log('============ webpack.version ', webpack.version);
 const platform = webpackTools.developmentConsts.platforms.web;
 
 module.exports = async function (env, argv) {
-  // eslint-disable-next-line no-param-reassign
   env = await webpackTools.modifyExpoEnv({ env, platform });
   let config = await createWebpackConfigAsync(
     {
