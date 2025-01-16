@@ -1,5 +1,5 @@
 import { platforms, Platform } from './developmentConsts';
-
+//BCMOD [ERR#1811]
 // Define a type for the function parameter
 interface BuildEnvParams {
   platform: Platform;
