@@ -4,7 +4,7 @@
     "slug": "baron-wallet",
     "owner": "baronhq",
     "version": "1.0.0",
-    "orientation": "default",
+    "orientation": "portrait",
     "scheme": "baron-wallet",
     "icon": "./assets/icon.png",
     "splash": {
@@ -13,7 +13,9 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 30000
+      "fallbackToCacheTimeout": 30000,
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -24,7 +26,18 @@
       "associatedDomains": [
         "applinks:app.baron.com"
       ],
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "This app uses Face ID to secure your wallet",
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes",
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.baron.wallet",
@@ -33,18 +46,33 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "googleServicesFile": "./android/app/google-services.json"
+      "googleServicesFile": "./android/app/google-services.json",
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "CAMERA",
+        "VIBRATE",
+        "INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "expo-localization",
+      "expo-secure-store",
+      "expo-local-authentication",
+      "expo-camera",
+      "expo-crypto"
+    ],
     "extra": {
       "eas": {
         "projectId": "your-project-id-here"
       }
     },
-    "plugins": [
-      "expo-localization"
-    ]
+    "jsEngine": "hermes",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }
