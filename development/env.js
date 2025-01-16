@@ -1,7 +1,7 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import { format } from 'date-fns';
-
+//BCMOD [ERR#1811]
 const loadEnvFile = (fileName: string): dotenv.DotenvConfigOutput => {
   return dotenv.config({
     path: path.resolve(__dirname, '..', fileName),
