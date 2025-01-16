@@ -1,4 +1,4 @@
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811]
+//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811]
 require('./env');
 const path = require('path');
 const developmentConsts = require('./developmentConsts');
