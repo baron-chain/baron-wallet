@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
+//BCMOD [ERR#1811]
 interface EjsParams {
   filename?: string;
   platform?: string;
