@@ -1,5 +1,5 @@
 import { spawn, ChildProcess } from 'child_process';
-
+//BCMOD [ERR#1811]
 interface ExecResult {
   code: number | null;
   signal: NodeJS.Signals | null;
