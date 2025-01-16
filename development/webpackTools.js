@@ -1,5 +1,5 @@
 require('./env');
-
+//BCMOD [ERR#1811]
 const webpack = require('webpack');
 const lodash = require('lodash');
 const notifier = require('node-notifier');
