@@ -1,5 +1,5 @@
 // developmentConsts.ts
-
+//BCMOD [ERR#1811]
 // Use TypeScript's const assertion for better type inference
 const platforms = {
   all: 'all',
