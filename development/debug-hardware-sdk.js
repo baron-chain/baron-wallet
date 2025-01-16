@@ -5,7 +5,7 @@
  *
  * Example: yarn debug:hardware-sdk -v 0.2.40
  */
-
+//BCMOD [ERR#1811]
 const { exec, execSync } = require('child_process');
 const minimist = require('minimist');
 
