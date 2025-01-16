@@ -1,15 +1,26 @@
 {
   "cli": {
-    "version": ">= 0.37.0"
+    "version": ">= 5.9.1",
+    "appVersionSource": "remote"
   },
   "build": {
     "base": {
+      "node": "18.18.2",
+      "yarn": "1.22.19",
+      "env": {
+        "EXPO_PUBLIC_APP_VARIANT": "production",
+        "EXPO_CACHE_ENABLED": "true"
+      },
       "android": {
         "image": "ubuntu-22.04-jdk-11-ndk-r21e",
         "ndk": "23.1.7779620",
         "env": {
           "PLATFORM": "android",
-          "OTA_UPDATE_ENABLE": "false"
+          "OTA_UPDATE_ENABLE": "false",
+          "ANDROID_NDK_HOME": "/opt/android/ndk/23.1.7779620"
+        },
+        "cache": {
+          "key": "gradle-{{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}-{{ hashFiles('android/build.gradle') }}"
         }
       },
       "ios": {
@@ -17,6 +28,9 @@
         "resourceClass": "m1-medium",
         "env": { 
           "PLATFORM": "ios"
+        },
+        "cache": {
+          "key": "pods-{{ hashFiles('ios/Podfile.lock') }}"
         }
       }
     },
@@ -24,27 +38,54 @@
       "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
+      "channel": "development",
       "env": {
-        "ENVIRONMENT": "development"
+        "ENVIRONMENT": "development",
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_APP_VARIANT": "development"
       },
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleDirectDebug",
+        "withoutCredentials": true,
         "env": {
-          "APPLICATION_ID_SUFFIX": "wrapper",
+          "APPLICATION_ID_SUFFIX": ".dev",
           "OTA_UPDATE_ENABLE": "true"
         }
       },
       "ios": {
         "enterpriseProvisioning": "adhoc",
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Debug",
+        "simulator": true
+      }
+    },
+    "preview": {
+      "extends": "development",
+      "distribution": "internal",
+      "channel": "preview",
+      "env": {
+        "ENVIRONMENT": "staging",
+        "APP_ENV": "staging",
+        "EXPO_PUBLIC_APP_VARIANT": "preview"
+      },
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDirectStaging"
+      },
+      "ios": {
+        "enterpriseProvisioning": "adhoc",
+        "buildConfiguration": "Release"
       }
     },
     "production": {
       "extends": "base",
       "distribution": "store",
+      "channel": "production",
+      "autoIncrement": true,
       "env": {
-        "ENVIRONMENT": "production"
+        "ENVIRONMENT": "production",
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_APP_VARIANT": "production"
       },
       "android": {
         "buildType": "apk",
@@ -57,11 +98,13 @@
         "enterpriseProvisioning": "adhoc",
         "buildConfiguration": "Release",
         "distribution": "internal",
-        "credentialsSource": "local"
+        "credentialsSource": "local",
+        "autoIncrement": true
       }
     },
     "production-store": {
       "extends": "production",
+      "channel": "production-store",
       "android": {
         "buildType": "app-bundle",
         "gradleCommand": ":app:bundleGoogleRelease",
@@ -76,6 +119,7 @@
     },
     "production-huawei": {
       "extends": "production",
+      "channel": "production-huawei",
       "android": {
         "gradleCommand": ":app:assembleHuaweiRelease",
         "env": {
@@ -91,11 +135,15 @@
         "appleTeamId": "BVJ3FU5H2K",
         "ascApiKeyIssuerId": "bbc48cd1-0ffa-4bb7-994d-fab6a5eff73e",
         "ascApiKeyId": "KAV3B73J8L",
-        "ascApiKeyPath": "./AscApiKey.p8"
+        "ascApiKeyPath": "./AscApiKey.p8",
+        "language": "en-US",
+        "sku": "com.baron.wallet"
       },
       "android": {
         "serviceAccountKeyPath": "./pc-api-8644398719570171123-0-dcae07e2afab.json",
-        "track": "internal"
+        "track": "internal",
+        "releaseStatus": "completed",
+        "changesNotSentForReview": true
       }
     }
   }
