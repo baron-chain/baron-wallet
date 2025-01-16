@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -ex
-
+#BCMOD [ERR#1811]
 # Function to copy files
 copy_file() {
     local src=$1
