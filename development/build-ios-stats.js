@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+//BCMOD [ERR#1811]
 const process = require('process');
 const chalk = require('chalk');
 const fs = require('fs-extra');
