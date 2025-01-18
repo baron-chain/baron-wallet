@@ -1,5 +1,5 @@
 import { isManifestV3 } from './developmentConsts';
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811]
+//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811]
 const sharedTranspile: string[] = [];
 
 const taprootModules: string[] = [
