@@ -3,31 +3,34 @@
 
 INPUT_FILE=$1
 START_LINE=`head -n1 $INPUT_FILE`
+PATTERN="^(BARON)-[[:digit:]]+"
 
-PATTERN="^(OK)-[[:digit:]]+"
-
-if ! [[ "$START_LINE" =~ $PATTERN|^feat\:|^fix\:|^docs\:|^style\:|^refactor\:|^perf\:|^test\:|^chore\: ]]; then
+if ! [[ "$START_LINE" =~ $PATTERN|^feat\:|^fix\:|^docs\:|^style\:|^refactor\:|^perf\:|^test\:|^chore\:|^security\: ]]; then
   echo "
-Bad commit message, you must add a jira issue key here. https://onekeyhq.atlassian.net/jira/your-work
-See example:
+Invalid commit message format. Your commit message must either:
 
-  OK-1234: commit message...
+1. Include a Baron issue key:
+   BARON-1234: your commit message...
 
-Or your commit message must a valid commitizen standard message.https://github.com/commitizen/cz-cli
+2. Or follow the Conventional Commits standard:
+   feat:     New feature
+   fix:      Bug fix
+   docs:     Documentation changes
+   style:    Code style changes (formatting, semicolons, etc)
+   refactor: Code restructuring
+   perf:     Performance improvements
+   test:     Adding or updating tests
+   chore:    Build process or tooling changes
+   security: Security-related changes
 
-  feat:        A new feature
-  fix:         A bug fix
-  docs:        Documentation only changes
-  style:       Changes that do not affect the meaning of the code.(white-space, formatting, missing semi-colons, etc)
-  refactor:    A code change that neither fixes a bug or adds a feature
-  perf:        A code change that improves performance
-  test:        Adding missing tests
-  chore:       Changes to the build process or auxiliary tools and libraries such as documentationgeneration
+Examples:
+- BARON-123: implement quantum-safe key generation
+- feat: add wallet connect integration
+- security: update post-quantum cryptography implementation
+- fix: resolve transaction signing issue
+- docs: update wallet setup instructions
 
-See example:
-  test: add sum function testcase.
-  docs: add sum function document.
-  feat: add swap tab for token swap feature.
-    "
+For more details, visit: https://github.com/baron-chain/baron-wallet/blob/main/CONTRIBUTING.md
+"
   exit 1
 fi
