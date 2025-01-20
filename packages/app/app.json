@@ -2,77 +2,135 @@
   "expo": {
     "name": "Baron Wallet",
     "slug": "baron-wallet",
-    "owner": "baronhq",
+    "owner": "baron-chain",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "scheme": "baron-wallet",
-    "icon": "./assets/icon.png",
+    "orientation": "default",
+    "scheme": "baronwallet",
+    "icon": "./assets/brand/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/brand/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1A1A1A"
     },
     "updates": {
-      "fallbackToCacheTimeout": 30000,
+      "fallbackToCacheTimeout": 0,
       "enabled": true,
-      "checkAutomatically": "ON_LOAD"
+      "checkAutomatically": "ON_ERROR_RECOVERY"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.baron.wallet",
+      "bundleIdentifier": "chain.baron.wallet",
       "associatedDomains": [
-        "applinks:app.baron.com"
+        "applinks:wallet.baron-chain.com"
       ],
       "buildNumber": "1",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "This app uses Face ID to secure your wallet",
-        "NSCameraUsageDescription": "This app uses the camera to scan QR codes",
+        "NSFaceIDUsageDescription": "Baron Wallet uses Face ID to secure your quantum-safe wallet and authorize transactions",
+        "NSCameraUsageDescription": "Baron Wallet uses the camera to scan QR codes for blockchain transactions",
         "UIBackgroundModes": [
           "fetch",
           "remote-notification"
+        ],
+        "CFBundleAllowMixedLocalizations": true,
+        "NSPhotoLibraryUsageDescription": "Baron Wallet needs access to save QR codes for wallet addresses",
+        "LSApplicationQueriesSchemes": [
+          "https",
+          "mailto"
         ]
       },
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "requireFullScreen": true
     },
     "android": {
-      "package": "com.baron.wallet",
+      "package": "chain.baron.wallet",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/brand/adaptive-icon.png",
+        "backgroundColor": "#1A1A1A"
       },
-      "googleServicesFile": "./android/app/google-services.json",
       "permissions": [
         "USE_BIOMETRIC",
         "USE_FINGERPRINT",
         "CAMERA",
         "VIBRATE",
-        "INTERNET"
+        "INTERNET",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.baron-chain.com",
+              "pathPrefix": "/tx"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/brand/favicon.png"
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "13.0",
+            "useFrameworks": "static"
+          },
+          "android": {
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.0"
+          }
+        }
+      ],
       "expo-localization",
       "expo-secure-store",
       "expo-local-authentication",
       "expo-camera",
-      "expo-crypto"
+      "expo-crypto",
+      "expo-device",
+      "expo-file-system",
+      "expo-clipboard",
+      "expo-navigation-bar"
     ],
     "extra": {
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "baron-wallet-prod"
       }
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "baron-chain",
+            "project": "baron-wallet",
+            "authToken": "SENTRY_AUTH_TOKEN"
+          }
+        }
+      ]
     },
     "jsEngine": "hermes",
     "runtimeVersion": {
-      "policy": "sdkVersion"
-    }
+      "policy": "appVersion"
+    },
+    "locales": {
+      "en": "./locales/en.json",
+      "es": "./locales/es.json",
+      "zh": "./locales/zh.json",
+      "ja": "./locales/ja.json"
+    },
+    "privacy": "public"
   }
 }
