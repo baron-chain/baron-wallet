@@ -1,12 +1,11 @@
 require('./env');
-//BCMOD [ERR#1811]
+
 const webpack = require('webpack');
 const lodash = require('lodash');
 const notifier = require('node-notifier');
 const { getPathsAsync } = require('@expo/webpack-config/env');
 const path = require('path');
 const fs = require('fs');
-
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
 const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
@@ -16,62 +15,49 @@ const indexHtmlParameter = require('./indexHtmlParameter');
 
 const { PUBLIC_URL } = process.env;
 
-class BuildDoneNotifyPlugin {
+class BuildNotificationPlugin {
   apply(compiler) {
-    compiler.hooks.done.tap(
-      'BuildDoneNotifyPlugin',
-      (compilation, callback) => {
-        const msg = `Baron Build at ${new Date().toLocaleTimeString()}`;
-        setTimeout(() => {
-          console.log('\u001b[33m'); // yellow color
-          console.log('===================================');
-          console.log(msg);
-          console.log('===================================');
-          console.log('\u001b[0m'); // reset color
-        }, 300);
-        notifier.notify(msg);
-      },
-    );
+    compiler.hooks.done.tap('BuildNotificationPlugin', () => {
+      const timestamp = new Date().toLocaleTimeString();
+      const msg = `Baron Wallet Build Complete - ${timestamp}`;
+      
+      setTimeout(() => {
+        console.log('\u001b[33m');
+        console.log('===================================');
+        console.log(msg);
+        console.log('===================================');
+        console.log('\u001b[0m');
+      }, 300);
+      
+      notifier.notify(msg);
+    });
   }
 }
 
-function createDefaultResolveExtensions() {
-  return [
-    '.web.ts', '.web.tsx', '.web.mjs', '.web.js', '.web.jsx',
-    '.ts', '.tsx', '.mjs', '.cjs', '.js', '.jsx', '.json', '.wasm', '.d.ts',
-  ];
-}
+const resolveExtensions = [
+  '.web.ts', '.web.tsx', '.web.mjs', '.web.js', '.web.jsx',
+  '.ts', '.tsx', '.mjs', '.cjs', '.js', '.jsx', '.json', '.wasm', '.d.ts',
+];
 
-function createDevServerProxy() {
-  return {
-    '/nexa_ws': {
-      target: 'wss://testnet-explorer.nexa.org:30004',
-      changeOrigin: true,
-      ws: true,
-    },
-  };
-}
+const proxyConfig = {
+  '/baron_ws': {
+    target: 'wss://testnet.baron-chain.org',
+    changeOrigin: true,
+    ws: true,
+  },
+};
 
-async function modifyExpoEnv({ env, platform }) {
+async function modifyExpoEnvironment({ env, platform }) {
   const locations = await getPathsAsync(env.projectRoot);
+  const templatePath = path.resolve(__dirname, '../packages/shared/src/web/index.html');
+  
+  locations.template.indexHtml = templatePath;
+  locations.template.indexHtmlTemplateParameters = indexHtmlParameter.createEjsParams({
+    filename: 'index.html',
+    platform,
+  });
 
-  const indexHtmlFile = path.resolve(
-    __dirname,
-    '../packages/shared/src/web/index.html',
-  );
-  locations.template.indexHtml = indexHtmlFile;
-  locations.template.indexHtmlTemplateParameters =
-    indexHtmlParameter.createEjsParams({
-      filename: 'index.html',
-      platform,
-    });
-
-  return {
-    ...env,
-    locations: {
-      ...locations,
-    },
-  };
+  return { ...env, locations: { ...locations } };
 }
 
 function normalizeConfig({
@@ -82,130 +68,134 @@ function normalizeConfig({
   enableAnalyzerHtmlReport,
   buildTargetBrowser,
 }) {
-  const isDev = process.env.NODE_ENV !== 'production';
-  let resolveExtensions = createDefaultResolveExtensions();
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  let extensions = [...resolveExtensions];
 
   if (platform) {
-    configureOutput(config, platform, isDev);
-    configurePlugins(config, platform, isDev, enableAnalyzerHtmlReport, configName);
+    configureOutputSettings(config, platform, isDevelopment);
+    configurePlugins(config, platform, isDevelopment, enableAnalyzerHtmlReport, configName);
     configureDevServer(config);
-    resolveExtensions = configureResolveExtensions(resolveExtensions, platform, buildTargetBrowser, configName);
+    extensions = getPlatformExtensions(extensions, platform, buildTargetBrowser, configName);
   }
 
-  configureModuleRules(config, platform, developmentConsts.isManifestV3, configName);
-  configureResolve(config, resolveExtensions, platform);
-  configureOptimization(config);
+  configureModules(config, platform, developmentConsts.isManifestV3, configName);
+  setupResolution(config, extensions, platform);
+  setupOptimization(config);
 
   return config;
 }
 
-function configureOutput(config, platform, isDev) {
-  if (PUBLIC_URL) config.output.publicPath = PUBLIC_URL;
-  if (platform === 'web' && !isDev) config.output.crossOriginLoading = 'anonymous';
-  config.output.filename = '[name].bundle.js';
+function configureOutputSettings(config, platform, isDevelopment) {
+  if (PUBLIC_URL) {
+    config.output.publicPath = PUBLIC_URL;
+  }
+  
+  if (platform === 'web' && !isDevelopment) {
+    config.output.crossOriginLoading = 'anonymous';
+  }
+  
+  config.output.filename = '[name].baron.js';
 }
 
-function configurePlugins(config, platform, isDev, enableAnalyzerHtmlReport, configName) {
-  config.plugins = [
-    ...config.plugins,
+function configurePlugins(config, platform, isDevelopment, enableAnalyzerHtmlReport, configName) {
+  const plugins = [
     new webpack.ProgressPlugin(),
-    platform !== 'ext' ? new DuplicatePackageCheckerPlugin() : null,
-    isDev ? new BuildDoneNotifyPlugin() : null,
+    platform !== 'ext' && new DuplicatePackageCheckerPlugin(),
+    isDevelopment && new BuildNotificationPlugin(),
     new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
     new webpack.DefinePlugin({
       'process.env.BARON_BUILD_TYPE': JSON.stringify(platform),
-      'process.env.EXT_INJECT_RELOAD_BUTTON': JSON.stringify(process.env.EXT_INJECT_RELOAD_BUTTON),
       'process.env.PUBLIC_URL': PUBLIC_URL,
     }),
-    isDev ? new ReactRefreshWebpackPlugin({ overlay: false }) : null,
-    platform === 'web' && !isDev ? new SubresourceIntegrityPlugin() : null,
+    isDevelopment && new ReactRefreshWebpackPlugin({ overlay: false }),
+    platform === 'web' && !isDevelopment && new SubresourceIntegrityPlugin(),
   ].filter(Boolean);
 
   if (process.env.ENABLE_ANALYZER) {
     const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-    config.plugins.push(new BundleAnalyzerPlugin(getBundleAnalyzerConfig(enableAnalyzerHtmlReport, configName)));
+    plugins.push(new BundleAnalyzerPlugin(getAnalyzerConfig(enableAnalyzerHtmlReport, configName)));
   }
+
+  config.plugins = [...config.plugins, ...plugins];
 }
 
 function configureDevServer(config) {
   if (config.devServer) {
     config.devServer.proxy = {
       ...config.devServer.proxy,
-      ...createDevServerProxy(),
+      ...proxyConfig,
     };
-    config.devServer.onBeforeSetupMiddleware = setupReactRenderTrackerMiddleware;
+    config.devServer.onBeforeSetupMiddleware = setupDevMiddleware;
   }
 }
 
-function configureResolveExtensions(resolveExtensions, platform, buildTargetBrowser, configName) {
-  const newExtensions = [
-    ...(buildTargetBrowser ? ['.ts', '.tsx', '.js', '.jsx'].map(ext => `.${buildTargetBrowser}-${platform}${ext}`) : []),
+function getPlatformExtensions(baseExtensions, platform, targetBrowser, configName) {
+  const platformSpecific = [
+    ...(targetBrowser ? ['.ts', '.tsx', '.js', '.jsx'].map(ext => `.${targetBrowser}-${platform}${ext}`) : []),
     ...(configName && platform === 'ext' && developmentConsts.isManifestV3
       ? ['.ts', '.tsx', '.js', '.jsx'].map(ext => `.${platform}-${configName}-v3${ext}`)
       : []),
     ...(configName ? ['.ts', '.tsx', '.js', '.jsx'].map(ext => `.${platform}-${configName}${ext}`) : []),
     ...['.ts', '.tsx', '.js', '.jsx'].map(ext => `.${platform}${ext}`),
-    ...resolveExtensions,
+    ...baseExtensions,
   ];
 
-  return lodash.uniq(newExtensions).sort((a, b) => {
-    if (a.includes(platform) && b.includes(platform)) return 0;
-    return a.includes(platform) ? -1 : 0;
-  });
+  return lodash.uniq(platformSpecific).sort((a, b) => 
+    a.includes(platform) && !b.includes(platform) ? -1 : 0
+  );
 }
 
-function configureModuleRules(config, platform, isManifestV3, configName) {
-  const useImportMetaLoader = platform !== 'ext' || 
+function configureModules(config, platform, isManifestV3, configName) {
+  const useMetaLoader = platform !== 'ext' || 
     (platform === 'ext' && !isManifestV3) ||
     (platform === 'ext' && isManifestV3 && configName === devUtils.consts.configName.offscreen);
 
-  if (useImportMetaLoader) {
+  if (useMetaLoader) {
     config.module.rules.push({
       test: /@polkadot/,
       loader: require.resolve('@open-wc/webpack-import-meta-loader'),
     });
   }
 
-  config.module.rules.push({
-    test: /\.mjs$/,
-    include: /node_modules/,
-    type: 'javascript/auto',
-  });
+  config.module.rules.push(
+    {
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    },
+    {
+      test: /\.ejs$/i,
+      use: ['html-loader', 'template-ejs-loader'],
+    }
+  );
 
-  config.module.rules.push({
-    test: /\.ejs$/i,
-    use: ['html-loader', 'template-ejs-loader'],
-  });
-
-  config.module.rules.forEach(normalizeModuleRule);
+  config.module.rules.forEach(normalizeRule);
 }
 
-function configureResolve(config, resolveExtensions, platform) {
-  config.resolve.extensions = resolveExtensions;
-  config.resolve.alias = {
-    ...config.resolve.alias,
-    // Add any necessary aliases here
-  };
-  config.resolve.fallback = {
-    ...config.resolve.fallback,
-    'crypto': require.resolve('@baronhq/shared/src/modules3rdParty/cross-crypto/index.js'),
-    'stream': require.resolve('stream-browserify'),
-    'path': false,
-    'https': false,
-    'http': false,
-    'net': false,
-    'zlib': false,
-    'tls': false,
-    'child_process': false,
-    'process': false,
-    'fs': false,
-    'util': false,
-    'os': false,
-    'buffer': require.resolve('buffer/'),
+function setupResolution(config, extensions, platform) {
+  config.resolve = {
+    ...config.resolve,
+    extensions,
+    fallback: {
+      crypto: require.resolve('@baronhq/shared/src/modules3rdParty/cross-crypto/index.js'),
+      stream: require.resolve('stream-browserify'),
+      buffer: require.resolve('buffer/'),
+      path: false,
+      https: false,
+      http: false,
+      net: false,
+      zlib: false,
+      tls: false,
+      'child_process': false,
+      process: false,
+      fs: false,
+      util: false,
+      os: false,
+    }
   };
 }
 
-function configureOptimization(config) {
+function setupOptimization(config) {
   config.optimization = {
     ...config.optimization,
     splitChunks: {
@@ -217,91 +207,77 @@ function configureOptimization(config) {
       name: false,
       maxInitialRequests: 20,
       maxAsyncRequests: 50000,
-      cacheGroups: {
-        // Add any necessary cache groups here
-      },
       ...config.optimization.splitChunks,
     },
   };
 }
 
-function normalizeModuleRule(rule) {
+function normalizeRule(rule) {
   if (!rule) return;
 
-  if (rule.loader && rule.loader.indexOf('file-loader') >= 0 && rule.exclude) {
-    rule.exclude.push(/\.wasm$/);
-    rule.exclude.push(/\.cjs$/);
-    rule.exclude.push(/\.custom-file-loader-exclude-extensions-from-webpack-tools$/);
+  if (rule.loader?.includes('file-loader') && rule.exclude) {
+    rule.exclude.push(/\.wasm$/, /\.cjs$/);
   }
 
-  if (rule.test && rule.test.toString() === '/\\.(mjs|[jt]sx?)$/') {
+  if (rule.test?.toString() === '/\\.(mjs|[jt]sx?)$/') {
     rule.test = /\.(cjs|mjs|[jt]sx?)$/;
   }
 
-  if (rule.test && rule.test.toString() === '/\\.+(js|jsx|mjs|ts|tsx)$/') {
+  if (rule.test?.toString() === '/\\.+(js|jsx|mjs|ts|tsx)$/') {
     rule.test = /\.+(cjs|js|jsx|mjs|ts|tsx)$/;
   }
 
-  (rule.oneOf || []).forEach(normalizeModuleRule);
+  (rule.oneOf || []).forEach(normalizeRule);
 }
 
-function getBundleAnalyzerConfig(enableAnalyzerHtmlReport, configName) {
-  return enableAnalyzerHtmlReport
-    ? {
-        analyzerMode: 'static',
-        reportFilename: `report${configName ? `-${configName}` : ''}.html`,
-        openAnalyzer: false,
-      }
-    : {
-        analyzerMode: 'disabled',
-        generateStatsFile: true,
-        statsOptions: {
-          reasons: false,
-          warnings: false,
-          errors: false,
-          optimizationBailout: false,
-          usedExports: false,
-          providedExports: false,
-          source: false,
-          ids: false,
-          children: false,
-          chunks: false,
-          modules: !!process.env.ANALYSE_MODULE,
-        },
-      };
+function getAnalyzerConfig(enableHtmlReport, configName) {
+  return enableHtmlReport ? {
+    analyzerMode: 'static',
+    reportFilename: `baron-report${configName ? `-${configName}` : ''}.html`,
+    openAnalyzer: false,
+  } : {
+    analyzerMode: 'disabled',
+    generateStatsFile: true,
+    statsOptions: {
+      reasons: false,
+      warnings: false,
+      errors: false,
+      optimizationBailout: false,
+      usedExports: false,
+      providedExports: false,
+      source: false,
+      ids: false,
+      children: false,
+      chunks: false,
+      modules: !!process.env.ANALYSE_MODULE,
+    },
+  };
 }
 
-function setupReactRenderTrackerMiddleware(devServer) {
+function setupDevMiddleware(devServer) {
   devServer.app.get(
-    '/react-render-tracker@0.7.3/dist/react-render-tracker.js',
+    '/baron-dev-tools/tracker.js',
     (req, res) => {
-      const sendResponse = (text) => {
-        res.setHeader(
-          'Cache-Control',
-          'no-store, no-cache, must-revalidate, proxy-revalidate',
-        );
+      const sendResponse = (content) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Age', '0');
         res.setHeader('Expires', '0');
         res.setHeader('Content-Type', 'text/javascript');
-        res.write(text);
-        res.end();
+        res.send(content);
       };
 
-      if (req.headers && req.headers.cookie && req.headers.cookie.includes('rrt=1')) {
-        const filePath = path.join(
-          __dirname,
-          '../node_modules/react-render-tracker/dist/react-render-tracker.js',
-        );
-        fs.readFile(filePath, 'utf8', (err, data) => {
+      if (req.headers?.cookie?.includes('baron_dev=1')) {
+        const trackerPath = path.join(__dirname, '../node_modules/react-render-tracker/dist/react-render-tracker.js');
+        fs.readFile(trackerPath, 'utf8', (err, data) => {
           if (err) {
-            console.error(err);
-            res.status(500).send(`Error reading file: ${filePath}`);
+            console.error('Baron Dev Tools Error:', err);
+            res.status(500).send('Error loading Baron dev tools');
             return;
           }
           sendResponse(data);
         });
       } else {
-        sendResponse("console.log('react-render-tracker is disabled')");
+        sendResponse("console.log('Baron dev tools disabled')");
       }
     },
   );
@@ -310,6 +286,6 @@ function setupReactRenderTrackerMiddleware(devServer) {
 module.exports = {
   developmentConsts,
   normalizeConfig,
-  modifyExpoEnv,
-  createDevServerProxy,
+  modifyExpoEnvironment,
+  proxyConfig,
 };
