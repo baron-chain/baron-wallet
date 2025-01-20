@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 5.9.1",
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "requireCommit": true
   },
   "build": {
     "base": {
@@ -9,28 +10,34 @@
       "yarn": "1.22.19",
       "env": {
         "EXPO_PUBLIC_APP_VARIANT": "production",
-        "EXPO_CACHE_ENABLED": "true"
+        "EXPO_CACHE_ENABLED": "true",
+        "BARON_WALLET_ENV": "production"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-11-ndk-r21e",
         "ndk": "23.1.7779620",
         "env": {
           "PLATFORM": "android",
-          "OTA_UPDATE_ENABLE": "false",
+          "ENABLE_QUANTUM_SAFE": "true",
+          "ENABLE_HERMES": "true",
           "ANDROID_NDK_HOME": "/opt/android/ndk/23.1.7779620"
         },
         "cache": {
-          "key": "gradle-{{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}-{{ hashFiles('android/build.gradle') }}"
+          "key": "gradle-{{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}-{{ hashFiles('android/build.gradle') }}",
+          "paths": ["~/.gradle/caches", "~/.gradle/wrapper"]
         }
       },
       "ios": {
         "image": "macos-ventura-13.6-xcode-15.2",
         "resourceClass": "m1-medium",
         "env": { 
-          "PLATFORM": "ios"
+          "PLATFORM": "ios",
+          "ENABLE_QUANTUM_SAFE": "true",
+          "ENABLE_HERMES": "true"
         },
         "cache": {
-          "key": "pods-{{ hashFiles('ios/Podfile.lock') }}"
+          "key": "pods-{{ hashFiles('ios/Podfile.lock') }}",
+          "paths": ["~/Library/Caches/CocoaPods"]
         }
       }
     },
@@ -42,7 +49,10 @@
       "env": {
         "ENVIRONMENT": "development",
         "APP_ENV": "development",
-        "EXPO_PUBLIC_APP_VARIANT": "development"
+        "EXPO_PUBLIC_APP_VARIANT": "development",
+        "BARON_WALLET_ENV": "development",
+        "ENABLE_LOGGING": "true",
+        "ENABLE_DEVTOOLS": "true"
       },
       "android": {
         "buildType": "apk",
@@ -50,13 +60,16 @@
         "withoutCredentials": true,
         "env": {
           "APPLICATION_ID_SUFFIX": ".dev",
-          "OTA_UPDATE_ENABLE": "true"
+          "ENABLE_FLIPPER": "true"
         }
       },
       "ios": {
         "enterpriseProvisioning": "adhoc",
         "buildConfiguration": "Debug",
-        "simulator": true
+        "simulator": true,
+        "env": {
+          "ENABLE_FLIPPER": "true"
+        }
       }
     },
     "preview": {
@@ -66,15 +79,23 @@
       "env": {
         "ENVIRONMENT": "staging",
         "APP_ENV": "staging",
-        "EXPO_PUBLIC_APP_VARIANT": "preview"
+        "EXPO_PUBLIC_APP_VARIANT": "preview",
+        "BARON_WALLET_ENV": "staging",
+        "ENABLE_LOGGING": "true"
       },
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:assembleDirectStaging"
+        "gradleCommand": ":app:assembleDirectStaging",
+        "env": {
+          "ENABLE_PROGUARD": "true"
+        }
       },
       "ios": {
         "enterpriseProvisioning": "adhoc",
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "env": {
+          "ENABLE_BITCODE": "true"
+        }
       }
     },
     "production": {
@@ -85,13 +106,19 @@
       "env": {
         "ENVIRONMENT": "production",
         "APP_ENV": "production",
-        "EXPO_PUBLIC_APP_VARIANT": "production"
+        "EXPO_PUBLIC_APP_VARIANT": "production",
+        "BARON_WALLET_ENV": "production",
+        "ENABLE_LOGGING": "false",
+        "ENABLE_CRASH_REPORTING": "true"
       },
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleDirectRelease",
         "env": {
-          "ANDROID_CHANNEL": "direct"
+          "ANDROID_CHANNEL": "direct",
+          "ENABLE_PROGUARD": "true",
+          "ENABLE_R8_FULL_MODE": "true",
+          "ENABLE_HERMES": "true"
         }
       },
       "ios": {
@@ -99,7 +126,10 @@
         "buildConfiguration": "Release",
         "distribution": "internal",
         "credentialsSource": "local",
-        "autoIncrement": true
+        "autoIncrement": true,
+        "env": {
+          "ENABLE_BITCODE": "true"
+        }
       }
     },
     "production-store": {
@@ -109,12 +139,16 @@
         "buildType": "app-bundle",
         "gradleCommand": ":app:bundleGoogleRelease",
         "env": {
-          "ANDROID_CHANNEL": "google"
+          "ANDROID_CHANNEL": "google",
+          "ENABLE_PLAY_INTEGRITY": "true"
         }
       },
       "ios": {
         "enterpriseProvisioning": "universal",
-        "distribution": "store"
+        "distribution": "store",
+        "env": {
+          "ENABLE_APP_ATTEST": "true"
+        }
       }
     },
     "production-huawei": {
@@ -123,7 +157,8 @@
       "android": {
         "gradleCommand": ":app:assembleHuaweiRelease",
         "env": {
-          "ANDROID_CHANNEL": "huawei"
+          "ANDROID_CHANNEL": "huawei",
+          "ENABLE_HMS_CORE": "true"
         }
       }
     }
@@ -131,19 +166,21 @@
   "submit": {
     "production-store": {
       "ios": {
-        "ascAppId": "1609559473",
-        "appleTeamId": "BVJ3FU5H2K",
-        "ascApiKeyIssuerId": "bbc48cd1-0ffa-4bb7-994d-fab6a5eff73e",
-        "ascApiKeyId": "KAV3B73J8L",
-        "ascApiKeyPath": "./AscApiKey.p8",
+        "ascAppId": "chain.baron.wallet",
+        "appleTeamId": "BARON_TEAM_ID",
+        "ascApiKeyIssuerId": "BARON_KEY_ISSUER_ID",
+        "ascApiKeyId": "BARON_KEY_ID",
+        "ascApiKeyPath": "./certificates/BaronAscApiKey.p8",
         "language": "en-US",
-        "sku": "com.baron.wallet"
+        "sku": "chain.baron.wallet",
+        "appStoreState": "manual"
       },
       "android": {
-        "serviceAccountKeyPath": "./pc-api-8644398719570171123-0-dcae07e2afab.json",
+        "serviceAccountKeyPath": "./certificates/baron-wallet-service-account.json",
         "track": "internal",
         "releaseStatus": "completed",
-        "changesNotSentForReview": true
+        "changesNotSentForReview": true,
+        "rollout": 0.1
       }
     }
   }
