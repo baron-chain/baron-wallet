@@ -2,28 +2,49 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
 const projectRoot = __dirname;
-const config = getDefaultConfig(projectRoot);
 
-config.projectRoot = projectRoot;
+const createMetroConfig = () => {
+  const config = getDefaultConfig(projectRoot);
 
-config.resolver.sourceExts = [
-  ...config.resolver.sourceExts,
-  'text-js',
-  'd.ts',
-  'cjs',
-  'min.js',
-];
+  // Enhanced source extensions
+  const sourceExtensions = [
+    ...config.resolver.sourceExts,
+    'text-js',
+    'd.ts',
+    'cjs',
+    'min.js'
+  ];
 
-config.resolver.extraNodeModules = {
-  ...config.resolver.extraNodeModules,
-  fs: require.resolve('react-native-level-fs'),
-  path: require.resolve('path-browserify'),
-  stream: require.resolve('readable-stream'),
-  crypto: require.resolve('@baron/shared/src/modules3rdParty/cross-crypto/index.native.js'),
-  http: require.resolve('stream-http'),
-  https: require.resolve('https-browserify'),
-  net: require.resolve('react-native-tcp-socket'),
-  tls: require.resolve('react-native-tcp-socket'),
+  // Polyfill modules for Node.js core modules
+  const browserPolyfills = {
+    fs: require.resolve('react-native-level-fs'),
+    path: require.resolve('path-browserify'),
+    stream: require.resolve('readable-stream'),
+    crypto: require.resolve('@baron-chain/baron-wallet/shared/crypto/cross-crypto/index.native.js'),
+    http: require.resolve('stream-http'),
+    https: require.resolve('https-browserify'),
+    net: require.resolve('react-native-tcp-socket'),
+    tls: require.resolve('react-native-tcp-socket')
+  };
+
+  // Quantum-safe specific configurations
+  config.transformer = {
+    ...config.transformer,
+    babelTransformerPath: require.resolve('react-native-svg-transformer')
+  };
+
+  return {
+    ...config,
+    projectRoot,
+    resolver: {
+      ...config.resolver,
+      sourceExts: sourceExtensions,
+      extraNodeModules: {
+        ...config.resolver.extraNodeModules,
+        ...browserPolyfills
+      }
+    }
+  };
 };
 
-module.exports = config;
+module.exports = createMetroConfig();
