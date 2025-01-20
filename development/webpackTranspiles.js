@@ -1,13 +1,12 @@
 import { isManifestV3 } from './developmentConsts';
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811]
-const sharedTranspile: string[] = [];
 
-const taprootModules: string[] = [
+const cryptoModules: string[] = [
   '@cmdcode/buff-utils',
   '@cmdcode/tapscript',
   '@cmdcode/tapscript/dist/main.cjs',
   '@cmdcode/crypto-utils',
   '@cmdcode/crypto-utils/dist/main.cjs',
+  '@noble/curves',
 ];
 
 const walletConnectModules: string[] = [
@@ -17,15 +16,10 @@ const walletConnectModules: string[] = [
   '@walletconnect/window-metadata',
   '@walletconnect/relay-api',
   '@walletconnect/core',
+  '@walletconnect/auth-client',
+  '@walletconnect/sign-client',
   '@walletconnect-v2/utils',
   '@walletconnect-v2/core',
-  '@walletconnect-v2/core/node_modules/@walletconnect/utils',
-  '@walletconnect/auth-client',
-  '@walletconnect/auth-client/node_modules/@walletconnect/utils',
-  '@walletconnect/auth-client/node_modules/@walletconnect/core',
-  '@walletconnect/sign-client',
-  '@walletconnect/sign-client/node_modules/@walletconnect/utils',
-  '@walletconnect/sign-client/node_modules/@walletconnect/core',
   '@stablelib/chacha20poly1305',
   '@stablelib/hkdf',
   '@stablelib/random',
@@ -33,9 +27,8 @@ const walletConnectModules: string[] = [
   '@stablelib/x25519',
 ];
 
-const substrateModules: string[] = ['@substrate/txwrapper-core'];
-
-const polkadotModules: string[] = [
+const blockchainModules: string[] = [
+  '@substrate/txwrapper-core',
   '@polkadot/api',
   '@polkadot/wasm-bridge',
   '@polkadot/types-codec',
@@ -45,59 +38,55 @@ const polkadotModules: string[] = [
   '@polkadot/util',
   '@polkadot/util-crypto',
   '@polkadot/keyring',
-];
-
-const webModuleTranspile: string[] = [
-  ...sharedTranspile,
-  ...walletConnectModules,
-  ...taprootModules,
-  'moti',
-  '@gorhom',
   '@mysten/sui.js',
-  'superstruct',
-  '@noble/curves',
-  '@polkadot',
   '@solana/web3.js',
   '@kaspa/core-lib',
-  '@zondax/izari-filecoin',
-  '@baronhq',
-  'timeout-signal',
+  '@zondax/izari-filecoin'
 ];
 
-const extModuleTranspile: string[] = [
-  ...sharedTranspile,
-  ...substrateModules,
-  ...polkadotModules,
-  ...walletConnectModules,
-  ...taprootModules,
+const baronModules: string[] = [
   '@baronhq/blockchain-libs',
   '@baronhq/components',
   '@baronhq/kit',
   '@baronhq/kit-bg',
   '@baronhq/shared',
   '@baronhq/engine',
-  '@baronhq/app',
-  'react-native-animated-splash-screen',
-  'moti',
-  'popmotion',
-  '@mysten/sui.js',
-  'superstruct',
-  'timeout-signal',
-  '@noble/curves',
-  '@solana/web3.js',
-  '@zondax/izari-filecoin',
-  '@kaspa/core-lib',
-  ...(isManifestV3()
-    ? [
-        // '@blitslabs/filecoin-js-signer'
-      ]
-    : []),
+  '@baronhq/app'
 ];
 
-export { webModuleTranspile, extModuleTranspile };
+const uiModules: string[] = [
+  'moti',
+  '@gorhom',
+  'react-native-animated-splash-screen',
+  'popmotion'
+];
 
-// For CommonJS compatibility (if needed)
+const utilityModules: string[] = [
+  'superstruct',
+  'timeout-signal'
+];
+
+export const webModuleTranspile: string[] = [
+  ...cryptoModules,
+  ...walletConnectModules,
+  ...blockchainModules.filter(m => !m.includes('@substrate')),
+  ...uiModules.filter(m => !m.includes('react-native')),
+  ...utilityModules,
+  '@baronhq'
+];
+
+export const extModuleTranspile: string[] = [
+  ...cryptoModules,
+  ...walletConnectModules,
+  ...blockchainModules,
+  ...baronModules,
+  ...uiModules,
+  ...utilityModules,
+  ...(isManifestV3() ? [] : [])
+];
+
+// Maintain CommonJS compatibility
 module.exports = {
   webModuleTranspile,
-  extModuleTranspile,
+  extModuleTranspile
 };
