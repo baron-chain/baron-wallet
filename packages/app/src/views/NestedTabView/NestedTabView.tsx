@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import type { ForwardRefRenderFunction } from 'react';
 import {
   forwardRef,
@@ -7,26 +6,31 @@ import {
   useImperativeHandle,
   useRef,
 } from 'react';
-
 import { UIManager, findNodeHandle } from 'react-native';
 
-import { Box } from '@onekeyhq/components';
-import debugLogger from '@onekeyhq/shared/src/logger/debugLogger';
+import { Box } from '@baron-chain/components';
+import { debugLogger } from '@baron-chain/shared/logger';
 
 import NativeNestedTabView from './NativeNestedTabView';
-
-import type { PagerViewViewManagerType } from './NativeNestedTabView';
-import type {
-  NestedTabViewProps,
-  OnPageChangeEvent,
-  OnPageScrollStateChangeEvent,
+import type { 
+  PagerViewViewManagerType,
+  NestedTabViewProps, 
+  PageChangeEvent, 
+  PageScrollStateChangeEvent 
 } from './types';
 
-export type ForwardRefHandle = {
+/**
+ * Handle type for imperative methods on the NestedTabView
+ */
+export interface ForwardRefHandle {
   setPageIndex: (pageIndex: number) => void;
   setRefreshing: (refreshing: boolean) => void;
-};
+}
 
+/**
+ * Advanced Nested Tab View Component
+ * Provides flexible tab navigation with scroll and refresh management
+ */
 const NestedTabView: ForwardRefRenderFunction<
   ForwardRefHandle,
   NestedTabViewProps
@@ -38,85 +42,117 @@ const NestedTabView: ForwardRefRenderFunction<
     onPageScrollStateChange,
     onPageVerticalScroll,
     scrollEnabled = true,
-    ...rest
+    ...restProps
   },
   ref,
 ) => {
+  // Ref to track scrolling state
   const isScrolling = useRef(false);
+  
+  // Ref for the native tab view component
   const tabRef = useRef<PagerViewViewManagerType>(null);
 
+  /**
+   * Set the current page index imperatively
+   * @param pageIndex - Index of the page to navigate to
+   */
   const setPageIndex = useCallback((pageIndex: number) => {
     try {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(tabRef.current),
-        'setPageIndex',
-        [pageIndex],
-      );
+      const nodeHandle = findNodeHandle(tabRef.current);
+      if (nodeHandle) {
+        UIManager.dispatchViewManagerCommand(
+          nodeHandle,
+          'setPageIndex',
+          [pageIndex]
+        );
+      }
     } catch (error) {
-      debugLogger.common.error(`switch account tab error`, error);
+      debugLogger.common.error('Failed to switch tab', error);
     }
   }, []);
 
+  /**
+   * Set the refreshing state imperatively
+   * @param refreshing - Boolean indicating refresh state
+   */
   const setRefreshing = useCallback((refreshing: boolean) => {
     try {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(tabRef.current),
-        'setRefreshing',
-        [refreshing],
-      );
+      const nodeHandle = findNodeHandle(tabRef.current);
+      if (nodeHandle) {
+        UIManager.dispatchViewManagerCommand(
+          nodeHandle,
+          'setRefreshing',
+          [refreshing]
+        );
+      }
     } catch (error) {
-      debugLogger.common.error(`set refreshing error`, error);
+      debugLogger.common.error('Failed to set refresh state', error);
     }
   }, []);
 
+  // Expose imperative methods to parent components
   useImperativeHandle(ref, () => ({
     setPageIndex,
     setRefreshing,
   }));
 
+  /**
+   * Handle page change events
+   */
   const onTabChange = useCallback(
-    (e: OnPageChangeEvent) => {
+    (e: PageChangeEvent) => {
       onPageChange?.(e);
     },
-    [onPageChange],
+    [onPageChange]
   );
 
-  const onVerticalCall = useCallback(() => {
+  /**
+   * Handle vertical scroll events
+   */
+  const onVerticalScroll = useCallback(() => {
     isScrolling.current = false;
     onPageVerticalScroll?.();
   }, [onPageVerticalScroll]);
 
+  /**
+   * Determine if the component should capture responder
+   */
   const onMoveShouldSetResponderCapture = useCallback(
     () => isScrolling.current,
-    [],
+    []
   );
 
-  const onPageScrollStateChangeCall = useCallback(
-    (e: OnPageScrollStateChangeEvent) => {
+  /**
+   * Handle page scroll state changes
+   */
+  const onPageScrollStateChange = useCallback(
+    (e: PageScrollStateChangeEvent) => {
       onPageScrollStateChange?.(e);
-      if (e.nativeEvent.state === 'idle') {
-        isScrolling.current = false;
-      }
-      if (e.nativeEvent.state === 'dragging') {
-        isScrolling.current = true;
+      
+      switch (e.nativeEvent.state) {
+        case 'idle':
+          isScrolling.current = false;
+          break;
+        case 'dragging':
+          isScrolling.current = true;
+          break;
       }
     },
-    [],
+    [onPageScrollStateChange]
   );
 
   return (
     <NativeNestedTabView
       onPageChange={onTabChange}
-      onPageScrollStateChange={onPageScrollStateChangeCall}
-      onPageVerticalScroll={onVerticalCall}
+      onPageScrollStateChange={onPageScrollStateChange}
+      onPageVerticalScroll={onVerticalScroll}
       scrollEnabled={scrollEnabled}
       onMoveShouldSetResponderCapture={onMoveShouldSetResponderCapture}
       disableTabSlide={false}
-      // @ts-ignore
       ref={tabRef}
-      {...rest}
+      {...restProps}
     >
-      {/* native code get first child as header */}
+      {/* Native header view */}
       <Box>{headerView}</Box>
       {children}
     </NativeNestedTabView>
