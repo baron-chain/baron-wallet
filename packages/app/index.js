@@ -1,36 +1,55 @@
 import { registerRootComponent } from 'expo';
 import { Platform } from 'react-native';
-import { appSetting, AppSettingKey } from '@baron/shared/src/storage/appSetting';
+import { appSettings, AppSettingKey } from '@baron-chain/baron-wallet/shared/storage/appSettings';
 import App from './App';
 
-function setupPerformanceMonitoring() {
-  if (appSetting.getBoolean(AppSettingKey.perf_switch)) {
+const setupPerformanceMonitoring = () => {
+  if (!appSettings.getBoolean(AppSettingKey.PERFORMANCE_MONITORING)) return;
+
+  try {
     const {
       markJsBundleLoadedTime,
       markBatteryLevel,
       startRecordingMetrics,
-    } = require('@baron/shared/src/modules3rdParty/react-native-metrix');
+    } = require('@baron-chain/baron-wallet/shared/modules/performance-metrics');
+
     markJsBundleLoadedTime();
     markBatteryLevel();
     startRecordingMetrics();
+  } catch (error) {
+    console.error('Performance monitoring setup failed:', error);
   }
-}
+};
 
-function setupReactRenderTracker() {
-  if (process.env.NODE_ENV !== 'production' && appSetting.getBoolean(AppSettingKey.rrt)) {
+const setupReactRenderTracker = () => {
+  if (process.env.NODE_ENV === 'production') return;
+  
+  if (!appSettings.getBoolean(AppSettingKey.RENDER_TRACKER)) return;
+
+  try {
     const manufacturer = Platform.constants.Brand
       ? `${Platform.constants.Brand} (${Platform.constants.Manufacturer})`
-      : '';
-    const fingerprint = Platform.constants.Fingerprint
-      ? `-${Platform.constants.Fingerprint}`
-      : '';
+      : 'Unknown';
     
-    global.REMPL_TITLE = `${manufacturer}${Platform.OS}_${Platform.Version}${fingerprint}`;
+    const deviceInfo = [
+      manufacturer,
+      Platform.OS,
+      Platform.Version,
+      Platform.constants.Fingerprint || ''
+    ].filter(Boolean).join('_');
+
+    global.REMPL_TITLE = deviceInfo;
+    
     require('react-render-tracker');
+  } catch (error) {
+    console.error('React Render Tracker setup failed:', error);
   }
-}
+};
 
-setupPerformanceMonitoring();
-setupReactRenderTracker();
+const initializeApp = () => {
+  setupPerformanceMonitoring();
+  setupReactRenderTracker();
+  registerRootComponent(App);
+};
 
-registerRootComponent(App);
+initializeApp();
