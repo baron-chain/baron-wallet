@@ -1,81 +1,114 @@
-import type {
-  CardInfo,
-  Callback as LiteCallback,
-} from '../hardware/OnekeyLite/types';
 import type { NativeModule } from 'react-native';
 
+// Generic callback type for native module responses
+type NativeCallback<T> = (result: T) => void;
+
+/**
+ * Interface for permission management in the wallet
+ */
 export interface PermissionManagerInterface extends NativeModule {
   isOpenLocation: () => boolean;
   openLocationSetting: () => void;
 }
 
-export interface OKLiteManagerInterface extends NativeModule {
-  checkNFCPermission: (call: LiteCallback<boolean>) => void;
-  getCardName: (call: LiteCallback<string>) => void;
-  getLiteInfo: (call: LiteCallback<CardInfo>) => void;
+/**
+ * Interface for hardware wallet (Lite) management
+ */
+export interface HardwareWalletInterface extends NativeModule {
+  // NFC and card-related operations
+  checkNFCPermission: (callback: NativeCallback<boolean>) => void;
+  getCardName: (callback: NativeCallback<string>) => void;
+  
+  // Wallet seed management
   setMnemonic: (
-    mnemonic: string,
-    pwd: string,
-    overwrite: boolean,
-    call: LiteCallback<boolean>,
+    mnemonic: string, 
+    password: string, 
+    overwrite: boolean, 
+    callback: NativeCallback<boolean>
   ) => void;
-  getMnemonicWithPin: (pwd: string, call: LiteCallback<string>) => void;
+  getMnemonicWithPin: (password: string, callback: NativeCallback<string>) => void;
+  
+  // Security operations
   changePin: (
-    oldPwd: string,
-    newPwd: string,
-    call: LiteCallback<boolean>,
+    oldPassword: string, 
+    newPassword: string, 
+    callback: NativeCallback<boolean>
   ) => void;
-  reset: (call: LiteCallback<boolean>) => void;
+  reset: (callback: NativeCallback<boolean>) => void;
+  
+  // Device interactions
   cancel: () => void;
-  intoSetting: () => void;
+  openSettings: () => void;
 }
 
+/**
+ * Interface for splash screen management
+ */
 export interface SplashScreenManagerInterface extends NativeModule {
   show: () => void;
 }
 
+/**
+ * Interface for local HTTP server management
+ */
 export interface HTTPServerManagerInterface extends NativeModule {
   start: (
-    port: number,
-    name: string,
-    call: (data: string, success: boolean) => void,
+    port: number, 
+    name: string, 
+    callback: (data: string, success: boolean) => void
   ) => void;
   stop: () => void;
   respond: (id: string, code: number, type: string, body: string) => void;
 }
 
-export interface JPushManagerInterface extends NativeModule {
+/**
+ * Interface for push notification management
+ */
+export interface PushNotificationManagerInterface extends NativeModule {
   registerNotification: () => void;
 }
 
-export interface MinimizerInterface extends NativeModule {
+/**
+ * Interface for app minimization and navigation
+ */
+export interface AppMinimizationInterface extends NativeModule {
   exit: () => void;
   goBack: () => void;
   minimize: () => void;
 }
 
+/**
+ * Interface for cache management
+ */
 export interface CacheManagerInterface extends NativeModule {
   clearWebViewData: () => Promise<boolean>;
 }
 
+/**
+ * Interface for app restart functionality
+ */
 export interface AppRestartInterface extends NativeModule {
   restart: () => void;
 }
 
-export interface LoggerNativeModulesInterface extends NativeModule {
-  log: (msg: string) => void;
+/**
+ * Interface for native logging
+ */
+export interface LoggerNativeInterface extends NativeModule {
+  log: (message: string) => void;
 }
 
+// Extend React Native's NativeModulesStatic to include Baron Wallet specific modules
 declare module 'react-native' {
   interface NativeModulesStatic {
     HTTPServerManager: HTTPServerManagerInterface;
-    OKLiteManager: OKLiteManagerInterface;
-    OKPermissionManager: PermissionManagerInterface;
+    HardwareWalletManager: HardwareWalletInterface;
+    PermissionManager: PermissionManagerInterface;
     SplashScreenManager: SplashScreenManagerInterface;
-    JPushManager: JPushManagerInterface;
-    Minimizer: MinimizerInterface;
+    PushNotificationManager: PushNotificationManagerInterface;
+    AppMinimizer: AppMinimizationInterface;
     CacheManager: CacheManagerInterface;
     NativeAppRestart: AppRestartInterface;
-    LoggerNative: LoggerNativeModulesInterface;
+    LoggerNative: LoggerNativeInterface;
   }
 }
