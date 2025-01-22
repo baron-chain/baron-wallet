@@ -1,73 +1,106 @@
-import type { LocaleIds } from '@onekeyhq/components/src/locale';
-
+import type { LocaleIds } from '@baron-chain/components/locale';
 import type { HasName } from './base';
 import type { Token } from './token';
 
-enum AccountType {
+/**
+ * Defines the core account types supported by Baron Chain
+ */
+export enum AccountType {
   SIMPLE = 'simple',
-  UTXO = 'utxo',
+  UTXO = 'utxo', 
   VARIANT = 'variant',
-  // used for allNetworks
-  FAKE = 'FAKE',
+  QUANTUM = 'quantum', // Added for quantum-safe accounts
+  FAKE = 'FAKE', // Used for testing/development
 }
-// TODO: ACCOUNT_TYPE_MULVARIANT for cosmos/polkadot
 
-enum AccountCredentialType {
+/**
+ * Defines credential types for account authentication
+ */
+export enum AccountCredentialType {
   PrivateKey = 'PrivateKey',
-  PrivateViewKey = 'PrivateViewKey',
-  PrivateSpendKey = 'PrivateSpendKey',
   Mnemonic = 'Mnemonic',
+  QuantumKey = 'QuantumKey', // For Kyber keys
+  DilithiumKey = 'DilithiumKey', // For Dilithium signatures
 }
 
-type DBBaseAccount = HasName & {
+/**
+ * Base interface for all account types
+ */
+export interface DBBaseAccount extends HasName {
   type: AccountType;
   path: string;
   coinType: string;
   template?: string;
-};
+  isQuantumSafe?: boolean;
+}
 
-type DBSimpleAccount = DBBaseAccount & {
+/**
+ * Simple account type with single address
+ */
+export interface DBSimpleAccount extends DBBaseAccount {
   pub: string;
   address: string;
-};
+  quantumPub?: string; // Quantum public key
+}
 
-type DBUTXOAccount = DBBaseAccount & {
+/**
+ * UTXO-based account type
+ */
+export interface DBUTXOAccount extends DBBaseAccount {
   pub?: string;
   xpub: string;
-  xpubSegwit?: string; // wrap regular xpub into bitcoind native descriptor
-  address: string; // Display/selected address
+  xpubSegwit?: string;
+  address: string;
   addresses: Record<string, string>;
-  customAddresses?: Record<string, string>; // for btc custom address
-};
+  customAddresses?: Record<string, string>;
+  quantumAddresses?: Record<string, string>; // Quantum-safe addresses
+}
 
-type DBVariantAccount = DBBaseAccount & {
+/**
+ * Multi-network variant account type
+ */
+export interface DBVariantAccount extends DBBaseAccount {
   pub: string;
-  address: string; // Base address
-  addresses: Record<string, string>; // Network -> address
-};
+  address: string;
+  addresses: Record<string, string>;
+  quantumPub?: string;
+  quantumAddresses?: Record<string, string>;
+}
 
-type DBAccount = DBSimpleAccount | DBUTXOAccount | DBVariantAccount;
+export type DBAccount = DBSimpleAccount | DBUTXOAccount | DBVariantAccount;
 
-type Account = DBBaseAccount & {
+/**
+ * Extended account interface with additional metadata
+ */
+export interface Account extends DBBaseAccount {
   tokens: Array<Token>;
   address: string;
   pubKey?: string;
   displayAddress?: string;
-  xpub?: string; // for btc fork chain
-  customAddresses?: string; // for btc custom address
-  addresses?: string; // for lightning network
-};
+  xpub?: string;
+  customAddresses?: string;
+  addresses?: string;
+  quantumPubKey?: string;
+  quantumAddress?: string;
+}
 
-type ImportableHDAccount = {
+/**
+ * Interface for importable HD wallet accounts
+ */
+export interface ImportableHDAccount {
   index: number;
   path: string;
   defaultName: string;
   displayAddress: string;
   mainBalance: string;
   template?: string;
-};
+  isQuantumSafe?: boolean;
+}
 
-type BtcForkChainUsedAccount = {
+/**
+ * Interface for BTC fork chain accounts
+ */
+export interface BtcForkChainUsedAccount {
   transfers: number;
   name: string;
   path: string;
@@ -75,21 +108,25 @@ type BtcForkChainUsedAccount = {
   balance: string;
   totalReceived: string;
   displayTotalReceived: string;
-};
+}
 
-type AccountCredential = {
+/**
+ * Interface for account credentials
+ */
+export interface AccountCredential {
   type: AccountCredentialType;
   key: LocaleIds;
+}
+
+// Type guard functions
+export const isQuantumSafeAccount = (account: DBAccount): boolean => {
+  return account.isQuantumSafe === true;
 };
 
-export { AccountType, AccountCredentialType };
-export type {
-  AccountCredential,
-  DBSimpleAccount,
-  DBUTXOAccount,
-  DBVariantAccount,
-  DBAccount,
-  Account,
-  ImportableHDAccount,
-  BtcForkChainUsedAccount,
+export const isUTXOAccount = (account: DBAccount): account is DBUTXOAccount => {
+  return account.type === AccountType.UTXO;
+};
+
+export const isVariantAccount = (account: DBAccount): account is DBVariantAccount => {
+  return account.type === AccountType.VARIANT;
 };
