@@ -1,9 +1,8 @@
-type BaseObject = {
-  id: string;
-};
+type BaseObject struct {
+    ID string
+}
 
-type HasName = BaseObject & {
-  name: string;
-};
-
-export type { BaseObject, HasName };
+type HasName struct {
+    BaseObject
+    Name string
+}
