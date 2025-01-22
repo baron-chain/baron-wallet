@@ -1,174 +1,217 @@
-import { web3Errors } from '@onekeyfe/cross-inpage-provider-errors';
-import BigNumber from 'bignumber.js';
-import { isNil } from 'lodash';
+package utils
 
-import type { TxInput, UnsignedTx } from '@onekeyhq/engine/src/types/provider';
-import {
-  IMPL_ALGO,
-  IMPL_BTC,
-  IMPL_CFX,
-  IMPL_EVM,
-  IMPL_NEAR,
-  IMPL_SOL,
-  IMPL_STC,
-} from '@onekeyhq/shared/src/engine/engineConsts';
+import (
+	"errors"
+	"math/big"
 
-import type { DBAccount, DBSimpleAccount } from './types/account';
-import type { Network } from './types/network';
-import type { Token } from './types/token';
+	"github.com/baron-chain/baron-wallet/types"
+	"github.com/baron-chain/baron-wallet/crypto/kyber"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
-export function fillUnsignedTxObj({
-  network,
-  dbAccount,
-  from,
-  to,
-  value,
-  valueOnChain,
-  token,
-  extra,
-  shiftFeeDecimals = false,
-}: {
-  network: Network;
-  dbAccount: DBAccount;
-  from: string;
-  to: string;
-  value?: BigNumber;
-  valueOnChain?: string;
-  token?: Token;
-  extra?: { [key: string]: any };
-  shiftFeeDecimals?: boolean;
-}): UnsignedTx {
-  let valueOnChainBN = new BigNumber(0);
-  let tokenIdOnNetwork: string | undefined;
-  if (valueOnChain) {
-    valueOnChainBN = new BigNumber(valueOnChain);
-  } else if (!isNil(value)) {
-    valueOnChainBN = value;
-    if (typeof token !== 'undefined') {
-      valueOnChainBN = valueOnChainBN.shiftedBy(token.decimals);
-      tokenIdOnNetwork = token.tokenIdOnNetwork;
-    } else {
-      valueOnChainBN = valueOnChainBN.shiftedBy(network.decimals);
-    }
-  }
+var (
+	// ErrInvalidAmount represents an error for invalid transaction amount
+	ErrInvalidAmount = errors.New("invalid transaction amount")
+	
+	// ErrInvalidAddress represents an error for invalid address format
+	ErrInvalidAddress = errors.New("invalid address format")
+	
+	// ErrInvalidNetwork represents an error for unsupported network
+	ErrInvalidNetwork = errors.New("unsupported network implementation")
+)
 
-  const { type, nonce, feeLimit, feePricePerUnit, ...payload } = extra as {
-    type?: string;
-    nonce?: number;
-    feeLimit?: BigNumber;
-    feePricePerUnit?: BigNumber;
-    [key: string]: any;
-  };
-  const { maxFeePerGas, maxPriorityFeePerGas } = payload as {
-    maxFeePerGas: string;
-    maxPriorityFeePerGas: string;
-  };
-  // EIP 1559
-  const eip1559 =
-    typeof maxFeePerGas === 'string' &&
-    typeof maxPriorityFeePerGas === 'string';
-  if (eip1559) {
-    let maxFeePerGasBN = new BigNumber(maxFeePerGas);
-    let maxPriorityFeePerGasBN = new BigNumber(maxPriorityFeePerGas);
+// NetworkImpl represents different blockchain implementations
+const (
+	ImplBaronChain = "BARON"
+	ImplEthereum   = "ETH"
+	ImplBinance    = "BNB"
+	ImplPolygon    = "POLYGON"
+)
 
-    if (shiftFeeDecimals) {
-      maxFeePerGasBN = maxFeePerGasBN.shiftedBy(network.feeDecimals);
-      maxPriorityFeePerGasBN = maxPriorityFeePerGasBN.shiftedBy(
-        network.feeDecimals,
-      );
-    }
-    payload.maxFeePerGas = maxFeePerGasBN;
-    payload.maxPriorityFeePerGas = maxPriorityFeePerGasBN;
-    payload.EIP1559Enabled = true;
-  }
-  const input: TxInput = {
-    address: from ?? dbAccount.address,
-    value: valueOnChainBN,
-    tokenAddress: tokenIdOnNetwork,
-  };
-  if (network.impl === IMPL_STC) {
-    input.publicKey = (dbAccount as DBSimpleAccount).pub;
-  }
-
-  let feePricePerUnitBN = feePricePerUnit;
-  if (shiftFeeDecimals) {
-    feePricePerUnitBN = feePricePerUnitBN?.shiftedBy(network.feeDecimals);
-  }
-  // TODO remove hack for eip1559 gasPrice=1
-  if (eip1559) {
-    feePricePerUnitBN = new BigNumber(1);
-  }
-
-  return {
-    inputs: [input],
-    outputs: [
-      {
-        address: to,
-        value: valueOnChainBN,
-        tokenAddress: tokenIdOnNetwork,
-      },
-    ],
-    type,
-    nonce,
-    feeLimit,
-    feePricePerUnit: feePricePerUnitBN,
-    payload,
-  };
+// NetworkConfig holds the configuration for different blockchain networks
+type NetworkConfig struct {
+	ImplName      string
+	DefaultClient string
+	Decimals      uint8
+	FeeDecimals   uint8
 }
 
-export function fillUnsignedTx(
-  network: Network,
-  dbAccount: DBAccount,
-  from: string,
-  to: string,
-  value: BigNumber,
-  token?: Token,
-  extra?: { [key: string]: any },
-): UnsignedTx {
-  return fillUnsignedTxObj({
-    network,
-    dbAccount,
-    from,
-    to,
-    value,
-    token,
-    extra,
-  });
+// NetworkConfigs maps implementation types to their configurations
+var NetworkConfigs = map[string]NetworkConfig{
+	ImplBaronChain: {
+		ImplName:      "baron",
+		DefaultClient: "BaronClient",
+		Decimals:      18,
+		FeeDecimals:   9,
+	},
+	ImplEthereum: {
+		ImplName:      "eth",
+		DefaultClient: "Geth",
+		Decimals:      18,
+		FeeDecimals:   9,
+	},
+	ImplBinance: {
+		ImplName:      "bnb",
+		DefaultClient: "BscClient",
+		Decimals:      18,
+		FeeDecimals:   9,
+	},
+	ImplPolygon: {
+		ImplName:      "polygon",
+		DefaultClient: "PolygonClient",
+		Decimals:      18,
+		FeeDecimals:   9,
+	},
 }
 
-// blockchain-libs can throw ResponseError and JSONResponseError upon rpc call
-// errors/failures. Each error has both message & response properties.
-// We read the possible error, categorize it by its message and decide
-// what to throw to upper layer.
-export function extractResponseError(e: unknown): unknown {
-  const { message, response } = e as { message?: string; response?: any };
-  if (typeof message === 'undefined' || typeof response === 'undefined') {
-    // not what we expected, throw original error out.
-    return e;
-  }
-  if (message === 'Error JSON PRC response') {
-    // TODO: avoid this stupid string comparison and there is even an unbearable typo.
-    // this is what blockchain-libs can throw upon a JSON RPC call failure
-    const { error: rpcError } = response;
-    if (typeof rpcError !== 'undefined') {
-      return web3Errors.rpc.internal({ data: rpcError });
-    }
-  }
-  // Otherwise, throw the original error out.
-  // TODO: see whether to wrap it into a gerinic OneKeyError.
-  return e;
+// UnsignedTxParams contains parameters for creating an unsigned transaction
+type UnsignedTxParams struct {
+	Network     types.Network
+	Account     types.Account
+	From        string
+	To          string
+	Value       *big.Int
+	ValueOnChain string
+	Token       *types.Token
+	Extra       map[string]interface{}
 }
 
-// IMPL naming aren't necessarily the same.
-export const IMPL_MAPPINGS: Record<
-  string,
-  { implName?: string; defaultClient: string }
-> = {
-  [IMPL_EVM]: { implName: 'eth', defaultClient: 'Geth' },
-  [IMPL_SOL]: { defaultClient: 'Solana' },
-  [IMPL_ALGO]: { defaultClient: 'Algod' },
-  [IMPL_NEAR]: { defaultClient: 'NearCli' },
-  [IMPL_STC]: { defaultClient: 'StcClient' },
-  [IMPL_CFX]: { defaultClient: 'Conflux' },
-  [IMPL_BTC]: { defaultClient: 'BlockBook' },
-};
+// CreateUnsignedTransaction creates an unsigned transaction with the given parameters
+func CreateUnsignedTransaction(params UnsignedTxParams) (*types.UnsignedTx, error) {
+	if err := validateAddress(params.From); err != nil {
+		return nil, err
+	}
+	if err := validateAddress(params.To); err != nil {
+		return nil, err
+	}
+
+	value := new(big.Int)
+	if len(params.ValueOnChain) > 0 {
+		value.SetString(params.ValueOnChain, 10)
+	} else if params.Value != nil {
+		value = params.Value
+		if params.Token != nil {
+			value = shiftDecimals(value, params.Token.Decimals)
+		} else {
+			value = shiftDecimals(value, params.Network.Decimals)
+		}
+	}
+
+	// Prepare transaction input
+	input := types.TxInput{
+		Address:     params.From,
+		Value:       value,
+		TokenID:     getTokenID(params.Token),
+		PublicKey:   params.Account.PublicKey,
+	}
+
+	// Handle quantum-safe encryption for Baron Chain
+	if params.Network.Implementation == ImplBaronChain {
+		kyberKey, err := kyber.NewKeyPair()
+		if err != nil {
+			return nil, err
+		}
+		input.QuantumPublicKey = kyberKey.PublicKeyBytes()
+	}
+
+	// Create transaction output
+	output := types.TxOutput{
+		Address:   params.To,
+		Value:     value,
+		TokenID:   getTokenID(params.Token),
+	}
+
+	// Handle gas fees and EIP-1559 if present in extra params
+	fees, err := processFees(params.Network, params.Extra)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.UnsignedTx{
+		Inputs:         []types.TxInput{input},
+		Outputs:        []types.TxOutput{output},
+		Type:           getTransactionType(params.Extra),
+		Nonce:          getNonce(params.Extra),
+		FeeLimit:       fees.FeeLimit,
+		FeePricePerUnit: fees.FeePricePerUnit,
+		Extra:          params.Extra,
+	}, nil
+}
+
+// processFees handles transaction fee calculations
+func processFees(network types.Network, extra map[string]interface{}) (*types.TxFees, error) {
+	fees := &types.TxFees{}
+
+	if maxFee, ok := extra["maxFeePerGas"].(*big.Int); ok {
+		if maxPriorityFee, ok := extra["maxPriorityFeePerGas"].(*big.Int); ok {
+			fees.IsEIP1559 = true
+			fees.MaxFeePerGas = maxFee
+			fees.MaxPriorityFeePerGas = maxPriorityFee
+		}
+	}
+
+	if feeLimit, ok := extra["feeLimit"].(*big.Int); ok {
+		fees.FeeLimit = feeLimit
+	}
+
+	if feePricePerUnit, ok := extra["feePricePerUnit"].(*big.Int); ok {
+		fees.FeePricePerUnit = feePricePerUnit
+	}
+
+	return fees, nil
+}
+
+// HandleRPCError processes RPC errors and returns appropriate error types
+func HandleRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	switch e := err.(type) {
+	case *sdk.Error:
+		return &types.RPCError{
+			Code:    e.Code(),
+			Message: e.Error(),
+			Data:    e.Data(),
+		}
+	default:
+		return &types.RPCError{
+			Code:    -32603,
+			Message: err.Error(),
+		}
+	}
+}
+
+// Utility functions
+func validateAddress(address string) error {
+	if len(address) == 0 {
+		return ErrInvalidAddress
+	}
+	return nil
+}
+
+func shiftDecimals(value *big.Int, decimals uint8) *big.Int {
+	result := new(big.Int).Set(value)
+	return result.Mul(result, new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil))
+}
+
+func getTokenID(token *types.Token) string {
+	if token == nil {
+		return ""
+	}
+	return token.TokenID
+}
+
+func getTransactionType(extra map[string]interface{}) string {
+	if txType, ok := extra["type"].(string); ok {
+		return txType
+	}
+	return "default"
+}
+
+func getNonce(extra map[string]interface{}) uint64 {
+	if nonce, ok := extra["nonce"].(uint64); ok {
+		return nonce
+	}
+	return 0
+}
