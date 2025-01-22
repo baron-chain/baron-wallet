@@ -1,54 +1,102 @@
-import debugLogger from '@onekeyhq/shared/src/logger/debugLogger';
-import { RestfulRequest } from '@onekeyhq/shared/src/request/RestfulRequest';
+import { Logger } from '@baron-chain/shared/logger';
+import { RestClient } from '@baron-chain/shared/http';
+import { BaronEndpoints } from './endpoints';
 
-import { getFiatEndpoint } from './endpoint';
-
-export type TokenBalancesQuery = {
-  network: string;
-  address: string;
-  // eslint-disable-next-line camelcase
-  contract_addresses?: string[];
-  xpub?: string;
-  withBRC20Tokens?: boolean;
-};
-
-export type TokenBalancesResponse = {
-  address: string;
-  balance: string;
-  name?: string;
-  // for sol
-  sendAddress: string;
-  bestBlockNumber?: string;
-  // for brc20
-  availableBalance?: string;
-  transferBalance?: string;
-}[];
-
-export const getBalancesFromApi = async ({
-  networkId,
-  address,
-  tokenAddresses,
-  xpub,
-}: {
+/**
+ * Types for token balance queries and responses
+ */
+export interface TokenBalanceQuery {
   networkId: string;
   address: string;
-  tokenAddresses?: string[];
+  contractAddresses?: string[];
   xpub?: string;
-}) => {
-  const req = new RestfulRequest(getFiatEndpoint(), {}, 60 * 1000);
-  const query: TokenBalancesQuery = {
-    network: networkId,
+  includeBRC20?: boolean;
+}
+
+export interface TokenBalance {
+  address: string;
+  balance: string;
+  tokenName?: string;
+  senderAddress?: string;
+  blockHeight?: string;
+  availableBalance?: string;
+  transferBalance?: string;
+}
+
+/**
+ * Main client for interacting with Baron Chain wallet API
+ */
+export class BaronWalletClient {
+  private readonly logger: Logger;
+  private readonly client: RestClient;
+
+  constructor() {
+    this.logger = new Logger('BaronWalletClient');
+    this.client = new RestClient(BaronEndpoints.getBaseUrl(), {
+      timeout: 60000 // 60 second timeout
+    });
+  }
+
+  /**
+   * Fetches token balances for an address
+   */  
+  public async getTokenBalances({
+    networkId,
     address,
-    withBRC20Tokens: true,
-  };
-  if (xpub) {
-    Object.assign(query, { xpub });
+    contractAddresses,
+    xpub,
+    includeBRC20 = true
+  }: TokenBalanceQuery): Promise<TokenBalance[]> {
+    
+    this.logger.debug('Fetching token balances', {
+      networkId,
+      address,
+      contractAddresses
+    });
+
+    const query: Record<string, any> = {
+      network: networkId,
+      address: address,
+      includeBRC20
+    };
+
+    if (xpub) {
+      query.xpub = xpub;
+    }
+
+    if (contractAddresses?.length) {
+      query.contractAddresses = contractAddresses;
+    }
+
+    try {
+      const response = await this.client.get<TokenBalance[]>(
+        '/v1/token/balances',
+        { params: query }
+      );
+
+      return response.data;
+
+    } catch (error) {
+      this.logger.error('Failed to fetch token balances', error);
+      throw error;
+    }
   }
-  if (tokenAddresses?.length) {
-    query.contract_addresses = tokenAddresses;
+
+  /**
+   * Gets quantum-safe token information
+   */
+  public async getQuantumSafeTokenInfo(tokenAddress: string): Promise<TokenBalance> {
+    try {
+      const response = await this.client.get<TokenBalance>(
+        `/v1/token/${tokenAddress}/info`
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to fetch quantum-safe token info', error);
+      throw error;
+    }
   }
-  debugLogger.http.info('getBalancesFromApi', query);
-  return (await req
-    .get('/token/balances', query)
-    .then((res) => res.json())) as TokenBalancesResponse;
-};
+}
+
+// Export default client instance
+export const baronWalletClient = new BaronWalletClient();
