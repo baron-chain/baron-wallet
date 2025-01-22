@@ -2,214 +2,252 @@ package engine
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
-	"sync"
+	"math/big"
 
 	"github.com/baron-chain/baron-wallet/crypto/kyber"
-	"github.com/baron-chain/baron-wallet/db"
-	"github.com/baron-chain/baron-wallet/provider"
 	"github.com/baron-chain/baron-wallet/types"
-	"github.com/baron-chain/baron-wallet/vault"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 )
 
 var (
-	// ErrNetworkNotFound represents a network not found error
-	ErrNetworkNotFound = errors.New("network not found")
-	
-	// ErrAccountNotFound represents an account not found error
-	ErrAccountNotFound = errors.New("account not found")
-	
-	// ErrWalletNotFound represents a wallet not found error
-	ErrWalletNotFound = errors.New("wallet not found")
-	
-	// ErrInvalidPassword represents an invalid password error
-	ErrInvalidPassword = errors.New("invalid password")
+	// ErrInvalidMnemonic represents an invalid mnemonic error
+	ErrInvalidMnemonic = errors.New("invalid mnemonic")
+
+	// ErrInvalidAccountName represents an invalid account name error
+	ErrInvalidAccountName = errors.New("invalid account name")
+
+	// ErrAccountExists represents a duplicate account error
+	ErrAccountExists = errors.New("account already exists")
+
+	// ErrInvalidNetworkID represents an invalid network ID error
+	ErrInvalidNetworkID = errors.New("invalid network ID")
 )
 
-// Engine represents the core wallet engine
-type Engine struct {
-	mu              sync.RWMutex
-	dbAPI           db.API
-	providerManager *provider.Manager
-	vaultFactory    *vault.Factory
-	kyberManager    *kyber.Manager
-	
-	// Cache for vaults to avoid recreation
-	vaultCache      sync.Map  // map[string]*vault.Vault
-	networkCache    sync.Map  // map[string]*types.Network
-}
-
-// NewEngine creates a new instance of the wallet engine
-func NewEngine(ctx context.Context, opt *types.EngineOptions) (*Engine, error) {
-	if opt == nil {
-		opt = &types.EngineOptions{}
+// CreateHDWallet creates a new HD wallet with the given options
+func (e *Engine) CreateHDWallet(ctx context.Context, opts *types.CreateWalletOptions) (*types.Wallet, error) {
+	if err := e.ValidatePassword(ctx, opts.Password); err != nil {
+		return nil, err
 	}
 
-	dbAPI, err := db.NewAPI(ctx, opt.DBOptions)
+	if err := e.validateAccountName(opts.Name); err != nil {
+		return nil, err
+	}
+
+	if err := e.validateMnemonic(opts.Mnemonic); err != nil {
+		return nil, err
+	}
+
+	// Generate entropy and seed using Kyber 
+	entropy, seed, err := e.kyberManager.GenerateEntropyAndSeed(opts.Password, opts.Mnemonic)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize database: %w", err)
+		return nil, fmt.Errorf("failed to generate entropy and seed: %w", err)
 	}
 
-	providerManager, err := provider.NewManager(ctx, opt.ProviderOptions)
+	// Create wallet in database
+	wallet, err := e.dbAPI.CreateHDWallet(ctx, &types.CreateHDWalletParams{
+		Name:      opts.Name,
+		Password:  opts.Password,
+		Entropy:   entropy,
+		Seed:      seed,
+		Mnemonic:  opts.Mnemonic,
+		Avatar:    opts.Avatar,
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize provider manager: %w", err)
+		return nil, fmt.Errorf("failed to create wallet: %w", err)
 	}
 
-	vaultFactory := vault.NewFactory(&vault.FactoryOptions{
-		DBApi:     dbAPI,
-		Provider:  providerManager,
-		Networks:  opt.Networks,
-		CacheTTL: opt.VaultCacheTTL,
-	})
-
-	kyberManager := kyber.NewManager()
-
-	engine := &Engine{
-		dbAPI:           dbAPI,
-		providerManager: providerManager,
-		vaultFactory:    vaultFactory,
-		kyberManager:    kyberManager,
+	// Add default accounts if specified
+	if opts.AddDefaultAccounts {
+		if err := e.addDefaultAccounts(ctx, wallet.ID, opts.Password); err != nil {
+			// Attempt to clean up on failure
+			_ = e.dbAPI.DeleteWallet(ctx, wallet.ID)
+			return nil, fmt.Errorf("failed to add default accounts: %w", err)
+		}
 	}
 
-	return engine, nil
+	return wallet, nil
 }
 
-// Close gracefully shuts down the engine
-func (e *Engine) Close() error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	if err := e.dbAPI.Close(); err != nil {
-		return fmt.Errorf("failed to close database: %w", err)
-	}
-
-	if err := e.providerManager.Close(); err != nil {
-		return fmt.Errorf("failed to close provider manager: %w", err)
-	}
-
-	e.vaultCache.Range(func(key, value interface{}) bool {
-		if v, ok := value.(*vault.Vault); ok {
-			if err := v.Close(); err != nil {
-				// just log error but continue closing others
-				fmt.Printf("failed to close vault: %v\n", err)
-			}
-		}
-		return true
-	})
-
-	return nil
-}
-
-// GetOrCreateVault returns an existing vault or creates a new one
-func (e *Engine) GetOrCreateVault(ctx context.Context, networkID string, accountID string) (*vault.Vault, error) {
-	cacheKey := fmt.Sprintf("%s-%s", networkID, accountID)
-	
-	// Try to get from cache first
-	if cached, ok := e.vaultCache.Load(cacheKey); ok {
-		if v, ok := cached.(*vault.Vault); ok {
-			return v, nil
-		}
-	}
-
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	// Check cache again after acquiring lock
-	if cached, ok := e.vaultCache.Load(cacheKey); ok {
-		if v, ok := cached.(*vault.Vault); ok {
-			return v, nil
-		}
-	}
-
-	network, err := e.getNetwork(ctx, networkID)
+// AddAccount adds a new account to a wallet
+func (e *Engine) AddAccount(ctx context.Context, opts *types.AddAccountOptions) (*types.Account, error) {
+	wallet, err := e.GetWallet(ctx, opts.WalletID)
 	if err != nil {
 		return nil, err
 	}
 
-	v, err := e.vaultFactory.CreateVault(ctx, network, accountID)
+	if err := e.ValidatePassword(ctx, opts.Password); err != nil {
+		return nil, err
+	}
+
+	if err := e.validateAccountName(opts.Name); err != nil {
+		return nil, err
+	}
+
+	network, err := e.getNetwork(ctx, opts.NetworkID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create vault: %w", err)
+		return nil, err
 	}
 
-	e.vaultCache.Store(cacheKey, v)
-	return v, nil
-}
-
-// getNetwork returns network information by ID
-func (e *Engine) getNetwork(ctx context.Context, networkID string) (*types.Network, error) {
-	// Try cache first
-	if cached, ok := e.networkCache.Load(networkID); ok {
-		if n, ok := cached.(*types.Network); ok {
-			return n, nil
-		}
-	}
-
-	network, err := e.dbAPI.GetNetwork(ctx, networkID)
+	vault, err := e.GetOrCreateVault(ctx, opts.NetworkID, wallet.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get network: %w", err)
+		return nil, err
 	}
 
-	e.networkCache.Store(networkID, network)
-	return network, nil
-}
-
-// ClearCache clears all internal caches
-func (e *Engine) ClearCache() {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	e.vaultCache = sync.Map{}
-	e.networkCache = sync.Map{}
-}
-
-// ValidatePassword validates if the provided password is correct
-func (e *Engine) ValidatePassword(ctx context.Context, password string) error {
-	if err := e.dbAPI.ValidatePassword(ctx, password); err != nil {
-		return ErrInvalidPassword
+	// Generate account using vault
+	accountParams := &types.CreateAccountParams{
+		Name:     opts.Name,
+		Path:     opts.Path,
+		Template: opts.Template,
+		CoinType: network.CoinType,
 	}
-	return nil
+
+	account, err := vault.CreateAccount(ctx, accountParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create account: %w", err)
+	}
+
+	// Add account to database
+	if err := e.dbAPI.AddAccount(ctx, wallet.ID, account); err != nil {
+		return nil, fmt.Errorf("failed to add account to database: %w", err)
+	}
+
+	return account, nil
 }
 
-// ChangePassword changes the master password
-func (e *Engine) ChangePassword(ctx context.Context, oldPassword, newPassword string) error {
-	if err := e.ValidatePassword(ctx, oldPassword); err != nil {
+// GetAccounts returns accounts for a given wallet and network
+func (e *Engine) GetAccounts(ctx context.Context, walletID string, networkID string) ([]*types.Account, error) {
+	accounts, err := e.dbAPI.GetAccounts(ctx, walletID, networkID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accounts: %w", err)
+	}
+
+	return accounts, nil
+}
+
+// GetAccount returns a specific account by ID
+func (e *Engine) GetAccount(ctx context.Context, accountID string) (*types.Account, error) {
+	account, err := e.dbAPI.GetAccount(ctx, accountID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get account: %w", err)
+	}
+
+	return account, nil
+}
+
+// DeleteAccount removes an account
+func (e *Engine) DeleteAccount(ctx context.Context, opts *types.DeleteAccountOptions) error {
+	if err := e.ValidatePassword(ctx, opts.Password); err != nil {
 		return err
 	}
 
-	return e.dbAPI.UpdatePassword(ctx, oldPassword, newPassword)
-}
-
-// ResetWallet resets the entire wallet state
-func (e *Engine) ResetWallet(ctx context.Context) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
-	if err := e.dbAPI.Reset(ctx); err != nil {
-		return fmt.Errorf("failed to reset database: %w", err)
+	account, err := e.GetAccount(ctx, opts.AccountID)
+	if err != nil {
+		return err
 	}
 
-	e.ClearCache()
+	vault, err := e.GetOrCreateVault(ctx, account.NetworkID, account.WalletID)
+	if err != nil {
+		return err
+	}
+
+	// Clean up account data in vault
+	if err := vault.DeleteAccount(ctx, account); err != nil {
+		return fmt.Errorf("failed to delete account from vault: %w", err)
+	}
+
+	// Remove from database
+	if err := e.dbAPI.DeleteAccount(ctx, opts.AccountID); err != nil {
+		return fmt.Errorf("failed to delete account from database: %w", err)
+	}
+
 	return nil
 }
 
-// GetFeatureFlags returns the current feature flags
-func (e *Engine) GetFeatureFlags(ctx context.Context) (*types.FeatureFlags, error) {
-	return e.dbAPI.GetFeatureFlags(ctx)
+// GetBalance returns the balance for an account
+func (e *Engine) GetBalance(ctx context.Context, accountID string, contractAddress string) (*big.Int, error) {
+	account, err := e.GetAccount(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	vault, err := e.GetOrCreateVault(ctx, account.NetworkID, account.WalletID)
+	if err != nil {
+		return nil, err
+	}
+
+	balance, err := vault.GetBalance(ctx, account.Address, contractAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get balance: %w", err)
+	}
+
+	return balance, nil
 }
 
-// UpdateFeatureFlags updates the feature flags
-func (e *Engine) UpdateFeatureFlags(ctx context.Context, flags *types.FeatureFlags) error {
-	return e.dbAPI.UpdateFeatureFlags(ctx, flags)
+// SendTransaction sends a transaction
+func (e *Engine) SendTransaction(ctx context.Context, opts *types.SendTxOptions) (*types.Transaction, error) {
+	if err := e.ValidatePassword(ctx, opts.Password); err != nil {
+		return nil, err
+	}
+
+	account, err := e.GetAccount(ctx, opts.AccountID)
+	if err != nil {
+		return nil, err
+	}
+
+	vault, err := e.GetOrCreateVault(ctx, account.NetworkID, account.WalletID)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := vault.SendTransaction(ctx, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	return tx, nil
 }
 
-// GetAppSettings returns the current app settings
-func (e *Engine) GetAppSettings(ctx context.Context) (*types.AppSettings, error) {
-	return e.dbAPI.GetAppSettings(ctx)
+// Helper functions
+
+func (e *Engine) validateAccountName(name string) error {
+	if len(name) < 1 || len(name) > 24 {
+		return ErrInvalidAccountName
+	}
+	return nil
 }
 
-// UpdateAppSettings updates the app settings
-func (e *Engine) UpdateAppSettings(ctx context.Context, settings *types.AppSettings) error {
-	return e.dbAPI.UpdateAppSettings(ctx, settings)
+func (e *Engine) validateMnemonic(mnemonic string) error {
+	if !e.kyberManager.ValidateMnemonic(mnemonic) {
+		return ErrInvalidMnemonic
+	}
+	return nil
+}
+
+func (e *Engine) addDefaultAccounts(ctx context.Context, walletID string, password string) error {
+	networks, err := e.dbAPI.GetNetworks(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, network := range networks {
+		if !network.IsDefault {
+			continue
+		}
+
+		opts := &types.AddAccountOptions{
+			WalletID:  walletID,
+			NetworkID: network.ID,
+			Password:  password,
+			Name:      fmt.Sprintf("%s Account", network.Name),
+		}
+
+		if _, err := e.AddAccount(ctx, opts); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
