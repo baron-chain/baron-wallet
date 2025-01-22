@@ -1,33 +1,44 @@
-import type { EIP1559Fee } from './network';
+package types
 
-export type BlockNativeGasInfo = {
-  estimatedTransactionCount: number;
-  baseFee: string;
-  prices: EIP1559Fee[];
-  maxPrice: number;
-  unit: string;
-};
+// EIP1559Fee represents the fee structure for EIP-1559 transactions
+type EIP1559Fee struct {
+    Price                 float64 `json:"price"`
+    MaxPriorityFeePerGas float64 `json:"maxPriorityFeePerGas"`
+    MaxFeePerGas         float64 `json:"maxFeePerGas"`
+}
 
-export type EstimatedPrice = {
-  confidence: number;
-  price: number;
-  maxPriorityFeePerGas: number;
-  maxFeePerGas: number;
-};
+// BlockNativeGasInfo contains gas estimation information
+type BlockNativeGasInfo struct {
+    EstimatedTransactionCount int           `json:"estimatedTransactionCount"`
+    BaseFee                   string        `json:"baseFee"`
+    Prices                    []EIP1559Fee  `json:"prices"`
+    MaxPrice                  float64       `json:"maxPrice"`
+    Unit                      string        `json:"unit"`
+}
 
-export type BlockPrice = {
-  blockNumber: number;
-  estimatedTransactionCount: number;
-  baseFeePerGas: number;
-  estimatedPrices: EstimatedPrice[];
-};
+// EstimatedPrice represents a single gas price estimate
+type EstimatedPrice struct {
+    Confidence             float64 `json:"confidence"`
+    Price                  float64 `json:"price"`
+    MaxPriorityFeePerGas   float64 `json:"maxPriorityFeePerGas"`
+    MaxFeePerGas           float64 `json:"maxFeePerGas"`
+}
 
-export type BlockNativeGasAPIResponse = {
-  system: string;
-  network: string;
-  unit: string;
-  maxPrice: number;
-  currentBlockNumber: number;
-  msSinceLastBlock: number;
-  blockPrices: BlockPrice[];
-};
+// BlockPrice contains price information for a specific block
+type BlockPrice struct {
+    BlockNumber               int                `json:"blockNumber"`
+    EstimatedTransactionCount int                `json:"estimatedTransactionCount"`
+    BaseFeePerGas             float64            `json:"baseFeePerGas"`
+    EstimatedPrices           []EstimatedPrice   `json:"estimatedPrices"`
+}
+
+// BlockNativeGasAPIResponse represents the full response from a gas price API
+type BlockNativeGasAPIResponse struct {
+    System               string       `json:"system"`
+    Network             string       `json:"network"`
+    Unit                string       `json:"unit"`
+    MaxPrice            float64      `json:"maxPrice"`
+    CurrentBlockNumber  int          `json:"currentBlockNumber"`
+    MsSinceLastBlock    int          `json:"msSinceLastBlock"`
+    BlockPrices         []BlockPrice `json:"blockPrices"`
+}
