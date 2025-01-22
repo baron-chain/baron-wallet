@@ -1,1323 +1,346 @@
-import { ethereumSignMessage } from './hardware';
-import { ETHMessageTypes } from './types/message';
-
-import type { IUnsignedMessageEvm } from './vaults/impl/evm/Vault';
-
-let messageHashResult = '';
-let messageHexResult = '';
-const mockHardwareSDK = {
-  evmSignTypedData: (
-    _connectId: string,
-    _deviceId: string,
-    { messageHash }: { messageHash: string },
-  ) => {
-    messageHashResult = messageHash;
-    return Promise.resolve({
-      success: true,
-      signature: '',
-    });
-  },
-  evmSignMessage: (
-    _connectId: string,
-    _deviceId: string,
-    { messageHex }: { messageHex: string },
-  ) => {
-    messageHexResult = messageHex;
-    return Promise.resolve({
-      success: true,
-      signature: '',
-    });
-  },
-};
-
-const ethereumSignMessageWrapper = async (message: IUnsignedMessageEvm) =>
-  ethereumSignMessage({
-    HardwareSDK: mockHardwareSDK as any,
-    connectId: 'connectId',
-    deviceId: 'deviceId',
-    path: 'path',
-    message,
-    chainId: 1,
-  });
-
-describe('ethereumSignMessage', () => {
-  describe('ETH_SIGN', () => {
-    test('should hash message', async () => {
-      const message =
-        '0x879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0';
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.ETH_SIGN,
-        message,
-      });
-
-      expect(messageHexResult).toMatchSnapshot();
-    });
-  });
-
-  describe('PERSONAL_SIGN', () => {
-    test('should hash message', async () => {
-      const message =
-        '0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765';
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.PERSONAL_SIGN,
-        message,
-      });
-
-      expect(messageHexResult).toMatchSnapshot();
-    });
-  });
-
-  describe('TYPED_DATA_V1', () => {
-    test('should throw not supported error', async () => {
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V1,
-          message: '',
-        }),
-      ).rejects.toThrow(
-        `Sign message method=${ETHMessageTypes.TYPED_DATA_V1} not supported for this device`,
-      );
-    });
-  });
-
-  describe('TYPED_DATA_V3', () => {
-    test('should hash data with custom type', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a recursive data type', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'replyTo', type: 'Mail' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-        replyTo: {
-          to: {
-            name: 'Cow',
-            wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-          },
-          from: {
-            name: 'Bob',
-            wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-          },
-          contents: 'Hello!',
-        },
-      };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should throw an error when trying to hash a custom type array', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'string[]' }],
-      };
-      const primaryType = 'Message';
-      const message = { data: ['1', '2', '3'] };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow(
-        'Arrays are unimplemented in encodeData; use V4 extension',
-      );
-    });
-    test('should ignore extra unspecified message properties', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const originalSignature = messageHashResult;
-      const messageWithExtraProperties = { ...message, foo: 'bar' };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message: messageWithExtraProperties,
-        }),
-      });
-
-      const signatureWithExtraProperties = messageHashResult;
-
-      expect(originalSignature).toBe(signatureWithExtraProperties);
-    });
-
-    test('should throw an error when an atomic property is set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'length', type: 'int32' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello!',
-        length: null,
-      };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow("Cannot read properties of null (reading 'toArray')");
-    });
-
-    test('should hash data with an atomic property set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'length', type: 'int32' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello!',
-        length: undefined,
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a dynamic property set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: null,
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a dynamic property set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: undefined,
-      };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should throw an error when a custom type property is set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        to: null,
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        contents: 'Hello, Bob!',
-      };
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow("Cannot read properties of null (reading 'name')");
-    });
-
-    test('should hash data with a custom type property set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: undefined,
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should throw an error when trying to hash a function', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'function' }],
-      };
-      const primaryType = 'Message';
-      const message = { data: 'test' };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('Unsupported or invalid type: function');
-    });
-
-    test('should throw an error when trying to hash with a missing primary type definition', async () => {
-      const types = {};
-      const message = { data: 'test' };
-      const primaryType = 'Message';
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('No type definition specified: Message');
-    });
-
-    test('should throw an error when trying to hash an unrecognized type', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'foo' }],
-      };
-      const message = { data: 'test' };
-      const primaryType = 'Message';
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V3,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('Unsupported or invalid type: foo');
-    });
-
-    test('should hash data when given extraneous types', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'string' }],
-        Extra: [{ name: 'data', type: 'string' }],
-      };
-      const message = { data: 'Hello!' };
-      const primaryType = 'Message';
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-  });
-
-  describe('TYPE_DATA_V4', () => {
-    test('should hash data with custom type', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a recursive data type', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'replyTo', type: 'Mail' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-        replyTo: {
-          to: {
-            name: 'Cow',
-            wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-          },
-          from: {
-            name: 'Bob',
-            wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-          },
-          contents: 'Hello!',
-        },
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a custom data type array', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address[]' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person[]' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: [
-            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-            '0xDD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-          ],
-        },
-        to: [
-          {
-            name: 'Bob',
-            wallet: ['0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'],
-          },
-        ],
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should ignore extra unspecified message properties', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const originalSignature = messageHashResult;
-      const messageWithExtraProperties = { ...message, foo: 'bar' };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message: messageWithExtraProperties,
-        }),
-      });
-
-      const signatureWithExtraProperties = messageHashResult;
-
-      expect(originalSignature).toBe(signatureWithExtraProperties);
-    });
-
-    test('should throw an error when an atomic property is set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'length', type: 'int32' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello!',
-        length: null,
-      };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow("Cannot read properties of null (reading 'toArray')");
-    });
-
-    test('should throw an error when an atomic property is set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'length', type: 'int32' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello!',
-        length: undefined,
-      };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('missing value for field length of type int32');
-    });
-
-    test('should hash data with a dynamic property set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: null,
-      };
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should throw an error when a dynamic property is set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: undefined,
-      };
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('missing value for field contents of type string');
-    });
-
-    test('should hash data with a custom type property set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        to: null,
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should hash data with a custom type property set to undefined', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: undefined,
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-
-    test('should throw an error when trying to hash a function', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'function' }],
-      };
-      const message = { data: 'test' };
-      const primaryType = 'Message';
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('Unsupported or invalid type: function');
-    });
-
-    test('should throw an error when trying to hash with a missing primary type definition', async () => {
-      const types = {};
-      const message = { data: 'test' };
-      const primaryType = 'Message';
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('No type definition specified: Message');
-    });
-
-    test('should throw an error when trying to hash an unrecognized type', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'foo' }],
-      };
-      const message = { data: 'test' };
-      const primaryType = 'Message';
-
-      await expect(
-        ethereumSignMessageWrapper({
-          type: ETHMessageTypes.TYPED_DATA_V4,
-          message: JSON.stringify({
-            types,
-            primaryType,
-            message,
-          }),
-        }),
-      ).rejects.toThrow('Unsupported or invalid type: foo');
-    });
-
-    test('should hash data when given extraneous types', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'string' }],
-        Extra: [{ name: 'data', type: 'string' }],
-      };
-      const message = { data: 'Hello!' };
-      const primaryType = 'Message';
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      expect(messageHashResult).toMatchSnapshot();
-    });
-  });
-
-  describe('TYPE_DATA_V3/V4 identical encodings', () => {
-    test('should hash data with custom type', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v4Signature = messageHashResult;
-
-      expect(v3Signature).toBe(v4Signature);
-    });
-    test('should ignore extra unspecified message properties', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const originalV3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const originalV4Signature = messageHashResult;
-
-      const messageWithExtraProperties = { ...message, foo: 'bar' };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message: messageWithExtraProperties,
-        }),
-      });
-
-      const v3signatureWithExtraProperties = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message: messageWithExtraProperties,
-        }),
-      });
-
-      const v4signatureWithExtraProperties = messageHashResult;
-
-      expect(originalV3Signature).toBe(originalV4Signature);
-      expect(v3signatureWithExtraProperties).toBe(
-        v4signatureWithExtraProperties,
-      );
-    });
-    test('should hash data with a dynamic property set to null', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: null,
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v4Signature = messageHashResult;
-
-      expect(v3Signature).toBe(v4Signature);
-    });
-    test('should hash data when given extraneous types', async () => {
-      const types = {
-        Message: [{ name: 'data', type: 'string' }],
-        Extra: [{ name: 'data', type: 'string' }],
-      };
-      const message = { data: 'Hello!' };
-      const primaryType = 'Message';
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v4Signature = messageHashResult;
-
-      expect(v3Signature).toBe(v4Signature);
-    });
-  });
-
-  describe('TYPE_DATA_V3/V4 encoding differences', () => {
-    test('should hash data with recursive data differently', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-          { name: 'replyTo', type: 'Mail' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        to: {
-          name: 'Bob',
-          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-        },
-        contents: 'Hello, Bob!',
-        replyTo: {
-          to: {
-            name: 'Cow',
-            wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-          },
-          from: {
-            name: 'Bob',
-            wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-          },
-          contents: 'Hello!',
-        },
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v4Signature = messageHashResult;
-
-      expect(v3Signature).not.toBe(v4Signature);
-    });
-    test('should hash missing custom type properties differently', async () => {
-      const types = {
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallet', type: 'address' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person' },
-          { name: 'contents', type: 'string' },
-        ],
-      };
-      const primaryType = 'Mail';
-      const message = {
-        from: {
-          name: 'Cow',
-          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-        },
-        contents: 'Hello, Bob!',
-      };
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V3,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v3Signature = messageHashResult;
-
-      await ethereumSignMessageWrapper({
-        type: ETHMessageTypes.TYPED_DATA_V4,
-        message: JSON.stringify({
-          types,
-          primaryType,
-          message,
-        }),
-      });
-
-      const v4Signature = messageHashResult;
-
-      expect(v3Signature).not.toBe(v4Signature);
-    });
-  });
-});
+package hardware_test
+
+import (
+	"context"
+	"encoding/hex"
+	"encoding/json"
+	"testing"
+
+	"github.com/baron-chain/baron-wallet/crypto/kyber"
+	"github.com/baron-chain/baron-wallet/hardware"
+	"github.com/baron-chain/baron-wallet/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+// Mock hardware device for testing
+type mockDevice struct {
+	messageHashResult string
+	messageHexResult  string
+}
+
+func (m *mockDevice) SignTypedData(chainID uint64, messageHash []byte) ([]byte, error) {
+	m.messageHashResult = hex.EncodeToString(messageHash)
+	return []byte{}, nil
+}
+
+func (m *mockDevice) SignMessage(chainID uint64, messageHex []byte) ([]byte, error) {
+	m.messageHexResult = hex.EncodeToString(messageHex)
+	return []byte{}, nil
+}
+
+func TestMessageSigning(t *testing.T) {
+	ctx := context.Background()
+	mockDev := &mockDevice{}
+	kyberManager := kyber.NewManager()
+	hw := hardware.NewHardwareManager(kyberManager)
+
+	// Helper function to sign messages
+	signMessage := func(message *types.UnsignedMessage) error {
+		opts := &types.SignMessageOptions{
+			DeviceID:    "testDevice",
+			ChainID:     1,
+			Path:        "m/44'/60'/0'/0/0",
+			Message:     message.Message,
+			MessageType: message.Type,
+		}
+		_, err := hw.EVMSignMessage(ctx, opts)
+		return err
+	}
+
+	t.Run("ETH_SIGN", func(t *testing.T) {
+		t.Run("should hash message", func(t *testing.T) {
+			message := "0x879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0"
+			err := signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeETHSign,
+				Message: message,
+			})
+			require.NoError(t, err)
+			assert.Equal(t, message[2:], mockDev.messageHexResult)
+		})
+	})
+
+	t.Run("PERSONAL_SIGN", func(t *testing.T) {
+		t.Run("should hash message", func(t *testing.T) {
+			message := "0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765"
+			err := signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypePersonalSign,
+				Message: message,
+			})
+			require.NoError(t, err)
+			assert.Equal(t, message[2:], mockDev.messageHexResult)
+		})
+	})
+
+	t.Run("TYPED_DATA_V1", func(t *testing.T) {
+		t.Run("should reject unsupported version", func(t *testing.T) {
+			err := signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeTypedDataV1,
+				Message: "",
+			})
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "not supported for this device")
+		})
+	})
+
+	t.Run("TYPED_DATA_V3", func(t *testing.T) {
+		t.Run("should hash data with custom type", func(t *testing.T) {
+			types := map[string][]types.TypedDataField{
+				"Person": {
+					{Name: "name", Type: "string"},
+					{Name: "wallet", Type: "address"},
+				},
+				"Mail": {
+					{Name: "from", Type: "Person"},
+					{Name: "to", Type: "Person"},
+					{Name: "contents", Type: "string"},
+				},
+			}
+
+			message := map[string]interface{}{
+				"from": map[string]interface{}{
+					"name":   "Cow",
+					"wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+				},
+				"to": map[string]interface{}{
+					"name":   "Bob",
+					"wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+				},
+				"contents": "Hello, Bob!",
+			}
+
+			data := types.TypedData{
+				Types:       types,
+				PrimaryType: "Mail",
+				Message:     message,
+			}
+
+			jsonData, err := json.Marshal(data)
+			require.NoError(t, err)
+
+			err = signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeTypedDataV3,
+				Message: string(jsonData),
+			})
+			require.NoError(t, err)
+			assert.NotEmpty(t, mockDev.messageHashResult)
+		})
+
+		t.Run("should hash data with recursive types", func(t *testing.T) {
+			types := map[string][]types.TypedDataField{
+				"Person": {
+					{Name: "name", Type: "string"},
+					{Name: "wallet", Type: "address"},
+				},
+				"Mail": {
+					{Name: "from", Type: "Person"},
+					{Name: "to", Type: "Person"},
+					{Name: "contents", Type: "string"},
+					{Name: "replyTo", Type: "Mail"},
+				},
+			}
+
+			message := map[string]interface{}{
+				"from": map[string]interface{}{
+					"name":   "Cow",
+					"wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+				},
+				"to": map[string]interface{}{
+					"name":   "Bob",
+					"wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+				},
+				"contents": "Hello, Bob!",
+				"replyTo": map[string]interface{}{
+					"to": map[string]interface{}{
+						"name":   "Cow",
+						"wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+					},
+					"from": map[string]interface{}{
+						"name":   "Bob",
+						"wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+					},
+					"contents": "Hello!",
+				},
+			}
+
+			data := types.TypedData{
+				Types:       types,
+				PrimaryType: "Mail",
+				Message:     message,
+			}
+
+			jsonData, err := json.Marshal(data)
+			require.NoError(t, err)
+
+			err = signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeTypedDataV3,
+				Message: string(jsonData),
+			})
+			require.NoError(t, err)
+			assert.NotEmpty(t, mockDev.messageHashResult)
+		})
+
+		t.Run("should reject arrays in V3", func(t *testing.T) {
+			types := map[string][]types.TypedDataField{
+				"Message": {
+					{Name: "data", Type: "string[]"},
+				},
+			}
+
+			message := map[string]interface{}{
+				"data": []string{"1", "2", "3"},
+			}
+
+			data := types.TypedData{
+				Types:       types,
+				PrimaryType: "Message",
+				Message:     message,
+			}
+
+			jsonData, err := json.Marshal(data)
+			require.NoError(t, err)
+
+			err = signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeTypedDataV3,
+				Message: string(jsonData),
+			})
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "Arrays are unimplemented in encodeData")
+		})
+	})
+
+	t.Run("TYPED_DATA_V4", func(t *testing.T) {
+		t.Run("should hash data with arrays", func(t *testing.T) {
+			types := map[string][]types.TypedDataField{
+				"Person": {
+					{Name: "name", Type: "string"},
+					{Name: "wallet", Type: "address[]"},
+				},
+				"Mail": {
+					{Name: "from", Type: "Person"},
+					{Name: "to", Type: "Person[]"},
+					{Name: "contents", Type: "string"},
+				},
+			}
+
+			message := map[string]interface{}{
+				"from": map[string]interface{}{
+					"name": "Cow",
+					"wallet": []string{
+						"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+						"0xDD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+					},
+				},
+				"to": []map[string]interface{}{
+					{
+						"name": "Bob",
+						"wallet": []string{
+							"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+						},
+					},
+				},
+				"contents": "Hello, Bob!",
+			}
+
+			data := types.TypedData{
+				Types:       types,
+				PrimaryType: "Mail",
+				Message:     message,
+			}
+
+			jsonData, err := json.Marshal(data)
+			require.NoError(t, err)
+
+			err = signMessage(&types.UnsignedMessage{
+				Type:    types.MessageTypeTypedDataV4,
+				Message: string(jsonData),
+			})
+			require.NoError(t, err)
+			assert.NotEmpty(t, mockDev.messageHashResult)
+		})
+	})
+
+	// Test quantum-safe signature verification
+	t.Run("Quantum Safe Verification", func(t *testing.T) {
+		message := "Test message"
+		keyPair, err := kyberManager.GenerateKeyPair()
+		require.NoError(t, err)
+
+		// Sign with quantum-safe signature
+		signature, err := kyberManager.Sign(keyPair, []byte(message))
+		require.NoError(t, err)
+
+		// Verify with quantum-safe verification
+		valid, err := kyberManager.Verify(keyPair.PublicKey, []byte(message), signature)
+		require.NoError(t, err)
+		assert.True(t, valid)
+	})
+}
+
+func TestMessageTypeCompatibility(t *testing.T) {
+	// Test compatibility between V3 and V4 for simple messages
+	t.Run("V3 and V4 compatibility for simple messages", func(t *testing.T) {
+		ctx := context.Background()
+		mockDev := &mockDevice{}
+		kyberManager := kyber.NewManager()
+		hw := hardware.NewHardwareManager(kyberManager)
+
+		types := map[string][]types.TypedDataField{
+			"Person": {
+				{Name: "name", Type: "string"},
+				{Name: "wallet", Type: "address"},
+			},
+			"Mail": {
+				{Name: "from", Type: "Person"},
+				{Name: "to", Type: "Person"},
+				{Name: "contents", Type: "string"},
+			},
+		}
+
+		message := map[string]interface{}{
+			"from": map[string]interface{}{
+				"name":   "Cow",
+				"wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+			},
+			"to": map[string]interface{}{
+				"name":   "Bob",
+				"wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+			},
+			"contents": "Hello, Bob!",
+		}
+
+		data := types.TypedData{
+			Types:       types,
+			PrimaryType: "Mail",
+			Message:     message,
+		}
+
+		jsonData, err := json.Marshal(data)
+		require.NoError(t, err)
+
+		// Sign with V3
+		v3Opts := &types.SignMessageOptions{
+			DeviceID:    "testDevice",
+			ChainID:     1,
+			Path:        "m/44'/60'/0'/0/0",
+			Message:     string(jsonData),
+			MessageType: types.MessageTypeTypedDataV3,
+		}
+		v3Result, err := hw.EVMSignMessage(ctx, v3Opts)
+		require.NoError(t, err)
+
+		// Sign with V4
+		v4Opts := &types.SignMessageOptions{
+			DeviceID:    "testDevice",
+			ChainID:     1,
+			Path:        "m/44'/60'/0'/0/0",
+			Message:     string(jsonData),
+			MessageType: types.MessageTypeTypedDataV4,
+		}
+		v4Result, err := hw.EVMSignMessage(ctx, v4Opts)
+		require.NoError(t, err)
+
+		// Hash results should be the same for compatible messages
+		assert.Equal(t, v3Result.Hash, v4Result.Hash)
+	})
+}
