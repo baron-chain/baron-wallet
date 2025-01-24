@@ -1,5 +1,5 @@
 import type { AccountNameInfo } from './network';
-
+//BCMOD 
 enum CredentialType {
   SOFTWARE = 'software', // HD
   HARDWARE = 'hardware',
