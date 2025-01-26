@@ -1,6 +1,7 @@
 import type { AccountNameInfo } from './network';
 //BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
 //BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
+//BCMOD 
 enum CredentialType {
   SOFTWARE = 'software', // HD
   HARDWARE = 'hardware',
