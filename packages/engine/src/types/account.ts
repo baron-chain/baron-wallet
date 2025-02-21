@@ -2,14 +2,6 @@ import type { LocaleIds } from '@baron-chain/components/locale';
 import type { HasName } from './base';
 import type { Token } from './token';
 //BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
-//BCMOD [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] [ERR#1811] 
 /**
  * Defines the core account types supported by Baron Chain
  */
