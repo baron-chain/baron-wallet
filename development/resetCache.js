@@ -2,7 +2,7 @@
  * Build Cleanup Script for Baron Wallet
  * Handles cache cleanup and build environment reset
  */
-
+//BCMOD 
 import { spawn, ChildProcess } from 'child_process';
 import chalk from 'chalk';
 import ora from 'ora';
