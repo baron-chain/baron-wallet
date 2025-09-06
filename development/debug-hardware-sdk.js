@@ -1,4 +1,3 @@
-//bcmod
 #!/usr/bin/env node
 
 /**
